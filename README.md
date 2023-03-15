@@ -29,7 +29,7 @@
 好看样式的卡片会极大的增加打卡和分享的欲望，更容易使人坚持。
 
 ## Install
-下载对应操作系统的二进制文件
+下载对应操作系统的二进制文件 https://github.com/LinkinStars/daily-cards/releases
 
 - 使用 `-init` 初始化配置文件
 - 使用 `-c` 指定目录，如果不指定则默认会在当前用户目录下创建如 `/root/daily-cards/`
