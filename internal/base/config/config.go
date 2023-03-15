@@ -44,6 +44,9 @@ func setDefault() {
 		DataPath, _ = os.UserHomeDir()
 		DataPath = filepath.Join(DataPath, "daily-cards")
 	}
+	if err := gu.CreateDirIfNotExist(DataPath); err != nil {
+		panic(err)
+	}
 }
 
 func Init() {
