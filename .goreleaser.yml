@@ -1,0 +1,28 @@
+before:
+  hooks:
+    - make ui
+    - go mod download
+builds:
+  - env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X "main.Version={{ .Tag }}"
+    main: ./cmd/dc/main.go
+    binary: dc
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - id: dc
+    name_template: >-
+      {{ .ProjectName }}_{{ .Os }}_{{ .Arch }}
+checksum:
+  name_template: 'checksums.txt'
+release:
+  github:
+    owner: LinkinStars
+    name: daily-card
+  name_template: "{{ .Tag }}"
