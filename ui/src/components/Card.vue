@@ -136,6 +136,7 @@ const showQrcode = siteInfo.show_qrcode;
 <style scoped>
 .card-border {
   padding: 10px;
+  width: calc(100% - 40px);
 }
 #card-bg {
   width: calc(100% - 40px);
