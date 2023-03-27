@@ -39,7 +39,7 @@ const jumpCardPage = async () => {
 <template>
   <div class="card-detail-bg">
     <div class="card-detail">
-      <div style="height: 20px"></div>
+      <div style="height: 60px"></div>
       <Card :id="cardID" />
       <div style="height: 20px"></div>
       <div class="card-detail-btn">

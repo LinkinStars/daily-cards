@@ -11,6 +11,7 @@ const cardID = ref(+route.params.id)
 <template>
   <div class="card-detail-bg">
     <div class="card-detail">
+      <div style="height: 60px"></div>
       <Card :id="cardID" />
     </div>
   </div>
