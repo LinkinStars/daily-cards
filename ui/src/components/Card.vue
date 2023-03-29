@@ -126,6 +126,7 @@ const showQrcode = siteInfo.show_qrcode;
   </div>
   <vue-easy-lightbox
       :visible="showCapture"
+      :moveDisabled="true"
       :imgs="imgsRef"
       @hide="showCapture = false"
     ></vue-easy-lightbox>
