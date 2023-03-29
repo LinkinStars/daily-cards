@@ -1,6 +1,6 @@
 <template>
-  <div class="card-list-header">
-    <img src="/icon/favicon-60.png" alt="logo" @click="jumpCardPage()"/>
+  <div class="card-list-header" @click="jumpCardPage()">
+    <img src="/icon/favicon-60.png" alt="logo"/>
     <span>{{ headerTitle }}</span>
   </div>
   <div class="main-container">
