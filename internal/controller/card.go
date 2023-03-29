@@ -52,7 +52,7 @@ func UpdateCard(ctx *gin.Context) {
 		return
 	}
 
-	err = dao.UpdateCard(req.ID, req.Content)
+	err = dao.UpdateCard(req)
 	handler.HandleResponse(ctx, err, nil)
 }
 

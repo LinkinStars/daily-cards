@@ -2,9 +2,12 @@ package dao
 
 import (
 	"bytes"
+	"fmt"
+	"time"
 
 	"github.com/LinkinStars/dc/internal/base/db"
 	"github.com/LinkinStars/dc/internal/model"
+	"github.com/LinkinStars/dc/internal/val"
 	"github.com/LinkinStars/go-scaffold/logger"
 	"github.com/LinkinStars/go-scaffold/mistake"
 	"github.com/yuin/goldmark"
@@ -14,7 +17,7 @@ import (
 )
 
 func AddCard(content string) error {
-	card := &model.Card{OriginalText: content, ParsedText: Markdown2HTML(content)}
+	card := &model.Card{CreatedAt: time.Now(), OriginalText: content, ParsedText: Markdown2HTML(content)}
 	_, err := db.Engine.InsertOne(card)
 	if err != nil {
 		return mistake.InternalServer("500", err.Error())
@@ -22,12 +25,22 @@ func AddCard(content string) error {
 	return nil
 }
 
-func UpdateCard(id int, content string) error {
+func UpdateCard(req *val.UpdateCardReq) error {
 	card := &model.Card{
-		OriginalText: content,
-		ParsedText:   Markdown2HTML(content),
+		OriginalText: req.Content,
+		ParsedText:   Markdown2HTML(req.Content),
 	}
-	_, err := db.Engine.ID(id).Update(card)
+
+	if len(req.CreatedAt) > 0 {
+		date, err := time.Parse("2006-01-02", req.CreatedAt)
+		if err == nil {
+			card.CreatedAt = date
+		} else {
+			logger.Error(fmt.Sprintf("parse date error: %s", err.Error()))
+		}
+	}
+
+	_, err := db.Engine.ID(req.ID).Update(card)
 	if err != nil {
 		return mistake.InternalServer("500", err.Error())
 	}

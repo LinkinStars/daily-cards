@@ -16,10 +16,11 @@ export function addCard(content : string) {
 export type UpdateCardReq = {
   id: number
   content: string
+  created_at: string
 }
 
-export function updateCard(id : number, content : string) {
-  const data: UpdateCardReq = { id: id, content: content}
+export function updateCard(id : number, content : string, created_at : string) {
+  const data: UpdateCardReq = { id: id, content: content, created_at: created_at}
   return request({
     url: '/api/v1/card',
     method: 'put',

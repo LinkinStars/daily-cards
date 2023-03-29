@@ -16,7 +16,18 @@ let date = {
   month: nowDate.getMonth() + 1,
   date: nowDate.getDate(),
 };
-const currentDate = date.year + "-" + date.month + "-" + date.date;
+
+const currentDate = ref(date.year + "-");
+if (date.month < 10) {
+  currentDate.value += "0" + date.month + "-";
+} else {
+  currentDate.value += date.month + "-";
+}
+if (date.date < 10) {
+  currentDate.value += "0" + date.date;
+} else {
+  currentDate.value += date.date;
+}
 
 const getCardInfo = async () => {
   if (cardID.value > 0) {
@@ -39,11 +50,12 @@ const loadCardInfo = async (id : number) => {
     }
     content.value = res.data.original_text;
     pv.value = res.data.pv;
+    currentDate.value = res.data.created_at;
 }
 
 const postCard = async () => {
   if (cardID.value > 0) {
-    const res = await updateCard(cardID.value, content.value);
+    const res = await updateCard(cardID.value, content.value, currentDate.value);
     if (res.code === 200) {
       router.push({
         name: "user-card-detail",
@@ -77,7 +89,7 @@ getCardInfo();
   <div class="card-edit-container-bg">
     <div class="card-edit-container">
       <div style="height: 20px"></div>
-      <div>{{ currentDate }} {{ "PV:" + pv }}</div>
+      <div><input class="card-edit-date-input" v-model="currentDate"/> {{ "PV:" + pv }}</div>
       <div style="height: 20px"></div>
       <div class="card-editor">
         <textarea autofocus v-model="content" rows="20"></textarea>
@@ -128,6 +140,11 @@ getCardInfo();
   flex-direction: column;
 
   min-height: calc(100% - 60px);
+}
+.card-edit-date-input {
+  background-color: transparent;
+  border: none;
+  width: 90px;
 }
 
 @media screen and (max-width: 768px) {

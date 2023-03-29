@@ -14,8 +14,9 @@ type DeleteCardReq struct {
 }
 
 type UpdateCardReq struct {
-	ID      int    `json:"id"`
-	Content string `json:"content"`
+	ID        int    `json:"id"`
+	CreatedAt string `json:"created_at"`
+	Content   string `json:"content"`
 }
 
 type GetCardDetailReq struct {
