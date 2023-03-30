@@ -28,6 +28,7 @@ if (date.date < 10) {
 } else {
   currentDate.value += date.date;
 }
+const today = currentDate.value;
 
 const getCardInfo = async () => {
   if (cardID.value > 0) {
@@ -39,6 +40,7 @@ const loadPreCard = async () => {
   await loadCardInfo(0)
   // 当加载上一次卡片的时候只需要加载内容，pv 的统计不需要添加
   pv.value = 0
+  currentDate.value = today
 };
 
 
@@ -100,7 +102,7 @@ getCardInfo();
         <button @click="addContent('- [ ] ')">todo</button>
         <button @click="addContent('- ')">item</button>
         <button @click="loadPreCard()">加载最新</button>
-        <button @click="postCard()">发布</button>
+        <button @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
       </div>
     </div>
   </div>
