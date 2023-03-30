@@ -54,4 +54,13 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from) => {
+  if (to.name === 'user-card-detail' || to.name === 'user-card-page' || to.name === 'user-card-post') {
+    let token = localStorage.getItem('accessToken')
+    if (!token) {
+     return { name: 'user-login' }
+    }
+  }
+ })
+
 export default router
