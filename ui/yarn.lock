@@ -465,6 +465,11 @@ hidpi-canvas@^1.0.10:
   resolved "https://registry.yarnpkg.com/hidpi-canvas/-/hidpi-canvas-1.0.10.tgz#d0e99996bf4b91a4de1137e877cacf174716614d"
   integrity sha512-ICKyL08skKMD+D+fHwHfZKcq2lm7WM8dQUZdBD7Y+/PsVBpcOhoUpvQmNVovfLKFUUyjY4ADPtIWyeLFWZdj4g==
 
+highlight.js@^11.7.0:
+  version "11.7.0"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.7.0.tgz#3ff0165bc843f8c9bce1fd89e2fda9143d24b11e"
+  integrity sha512-1rRqesRFhMO/PRF+G86evnyJkCgaZFOI+Z6kdj15TA18funfoqJXvgPCLSf0SWq3SRfg1j3HlDs8o4s3EGq1oQ==
+
 html2canvas@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/html2canvas/-/html2canvas-1.4.1.tgz#7cef1888311b5011d507794a066041b14669a543"

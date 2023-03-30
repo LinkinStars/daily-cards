@@ -26,7 +26,7 @@ const copyURL = async () => {
   try {
     await toClipboard(url);
     showTip.value = true;
-    setTimeout(() => {
+   setTimeout(() => {
       showTip.value = false;
     }, 5000);
   } catch (e) {
@@ -104,7 +104,7 @@ const showQrcode = siteInfo.show_qrcode;
           <p>{{ cardInfo.nickname }}</p>
         </div>
       </div>
-      <div class="card-content" v-html="cardInfo.content"></div>
+      <div class="card-content" v-html="cardInfo.content" v-highlight></div>
       <div v-if="showQrcode" class="share-qrcode">
         <qrcode-vue :value="shareURL()" :size="40"></qrcode-vue>
       </div>

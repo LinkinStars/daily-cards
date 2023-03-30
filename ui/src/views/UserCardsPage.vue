@@ -45,7 +45,7 @@ const jumpPostPage = () => {
   <div class="card-list-bg">
     <div class="card-list">
       <div class="card-list-item" v-for="card in cards" :key="card.id">
-        <div class="card-content" v-html="card.content"></div>
+        <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
         <div class="card-footer">
           <span>📅 {{ card.created_at }}</span>
