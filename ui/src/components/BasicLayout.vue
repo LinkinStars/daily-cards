@@ -21,12 +21,19 @@ const setupSiteInfo = async () => {
   if (resp.code === 200 && resp.data.site_name.length > 0) {
     headerTitle.value = resp.data.site_name;
     localStorage.setItem("siteInfo", JSON.stringify(resp.data));
+    // 如果 token 存在且 token 过期, 直接删除并跳转登录
+    let token = localStorage.getItem('accessToken')
+    if (token && !resp.data.is_login) {
+       localStorage.removeItem("accessToken"); 
+       router.push({ name: "user-login" });
+    }
   }
 };
 
 const jumpCardPage = async () => {
+  const resp = await getSiteInfo();
   let token = localStorage.getItem('accessToken')
-  if (token) {
+  if (token && resp.code === 200 && resp.data.is_login) {
     router.push({ name: "user-card-page" });
   } else {
     router.push({ name: "card-page" });

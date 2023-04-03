@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Card from "../components/Card.vue";
+import { getCard } from "../api/card";
 import { useRoute, useRouter } from "vue-router";
 import { deleteCard } from "@/api/card.ts";
 
@@ -34,6 +35,18 @@ const jumpUpdateCardPage = async () => {
 const jumpCardPage = async () => {
   router.push({ name: "user-card-page" });
 };
+
+const getCardByID = async () => {
+  const res = await getCard(cardID.value);
+  if (res.code != 200) {
+    alert("未查询到数据");
+    return
+  }
+  if (!res.data.is_login) {
+    router.push({ name: "user-login" });
+  }
+};
+getCardByID();
 </script>
 
 <template>

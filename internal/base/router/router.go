@@ -43,11 +43,11 @@ func Run() {
 	})
 
 	v1 := r.Group("/api/v1")
-	v1.GET("/card/site", controller.GetSiteInfo)
 	v1.POST("/card/login", controller.Login)
 
 	authV1 := r.Group("/api/v1")
 	authV1.Use(middleware.Auth(false))
+	authV1.GET("/card/site", controller.GetSiteInfo)
 	authV1.GET("/card", controller.GetCardDetail)
 	authV1.GET("/cards", controller.GetCardsPage)
 
