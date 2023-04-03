@@ -1,7 +1,7 @@
 <template>
   <div class="card-list-header">
-    <img src="/icon/favicon-60.png" alt="logo" @click="jumpCardPage()"/>
-    <span>{{ headerTitle }}</span>
+    <img src="/icon/favicon-60.png" alt="logo" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"/>
+    <span @click="jumpCardPage()">{{ headerTitle }}</span>
   </div>
   <div class="main-container">
     <router-view />
@@ -31,6 +31,10 @@ const jumpCardPage = async () => {
   } else {
     router.push({ name: "card-page" });
   }
+};
+
+const jumpToLoginPage = async () => {
+    router.push({ name: "user-login" });
 };
 setupSiteInfo()
 </script>
