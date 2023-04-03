@@ -60,6 +60,7 @@ getCardByID();
         <button @click="jumpUpdateCardPage()">修改</button>
         <button @click="deleteCardByID()">删除</button>
       </div>
+      <div style="height: 60px"></div>
     </div>
   </div>
 </template>
