@@ -7,6 +7,7 @@ import UserCardDetail from '../views/UserCardDetailPage.vue'
 import UserCardsPage from '../views/UserCardsPage.vue'
 import UserLoginPage from '../views/UserLoginPage.vue'
 import UserPostCardPage from '../views/UserPostCardPage.vue'
+import NotFoundPage from '../views/NotFoundPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,10 +44,18 @@ const routes: Array<RouteRecordRaw> = [
         path: '/card/uc/post/:id',
         name: 'user-card-post',
         component: UserPostCardPage
+      },
+      {
+        path: '/card/error/404',
+        name: 'not-found',
+        component: NotFoundPage
       }
     ]
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/card/error/404'
   }
-  
 ]
 
 const router = createRouter({

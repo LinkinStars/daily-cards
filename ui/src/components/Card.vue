@@ -6,6 +6,9 @@ import useClipboard from "vue-clipboard3";
 import html2canvas from "html2canvas";
 import QrcodeVue from 'qrcode.vue'
 import VueEasyLightbox from 'vue-easy-lightbox';
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const { toClipboard } = useClipboard();
 const props = defineProps<{ id: number }>();
@@ -41,13 +44,16 @@ const shareURL = () => {
 const getCardByID = async () => {
   const res = await getCard(props.id);
   if (res.code != 200) {
-    alert("未查询到数据");
+    router.push({ name: "not-found" });
   } else {
     cardInfo.id = res.data.id;
     cardInfo.created_at = res.data.created_at;
     cardInfo.content = res.data.content;
     cardInfo.nickname = res.data.nickname;
     cardInfo.avatar = res.data.avatar;
+  }
+  if (cardInfo.id === 0) {
+    router.push({ name: "not-found" });
   }
 };
 getCardByID();
