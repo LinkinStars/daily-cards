@@ -50,6 +50,7 @@ func Run() {
 	authV1.GET("/card/site", controller.GetSiteInfo)
 	authV1.GET("/card", controller.GetCardDetail)
 	authV1.GET("/cards", controller.GetCardsPage)
+	authV1.GET("/cards/stat", controller.GetCardsStat)
 
 	mustAuthV1 := r.Group("/api/v1")
 	mustAuthV1.Use(middleware.Auth(true))

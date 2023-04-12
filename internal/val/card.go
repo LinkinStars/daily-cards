@@ -50,3 +50,8 @@ type GetCardDetailResp struct {
 	OriginalText string `json:"original_text"`
 	PV           int    `json:"pv"`
 }
+
+type GetCardsStatResp struct {
+	Day     int  `json:"day"`
+	Checked bool `json:"checked"`
+}

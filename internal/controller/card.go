@@ -11,6 +11,7 @@ import (
 	"github.com/LinkinStars/go-scaffold/logger"
 	"github.com/LinkinStars/go-scaffold/mistake"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/now"
 )
 
 func Login(ctx *gin.Context) {
@@ -126,6 +127,30 @@ func GetCardDetail(ctx *gin.Context) {
 	if isLogin {
 		resp.OriginalText = c.OriginalText
 		resp.PV = c.PV
+	}
+	handler.HandleResponse(ctx, err, resp)
+}
+
+func GetCardsStat(ctx *gin.Context) {
+	startTime := now.BeginningOfMonth()
+	endTime := now.EndOfMonth()
+	cards, err := dao.GetCardsByTime(startTime, endTime)
+	if err != nil {
+		handler.HandleResponse(ctx, err, nil)
+		return
+	}
+
+	checkMapping := make(map[int]bool, 31)
+	for _, c := range cards {
+		checkMapping[c.CreatedAt.Day()] = true
+	}
+
+	resp := make([]*val.GetCardsStatResp, 0)
+	for i := 1; i <= endTime.Day(); i++ {
+		resp = append(resp, &val.GetCardsStatResp{
+			Day:     i,
+			Checked: checkMapping[i],
+		})
 	}
 	handler.HandleResponse(ctx, err, resp)
 }

@@ -80,4 +80,16 @@ export function getCardsPage(page : number) {
   })
 }
 
+export type CardStat = {
+  day: number;
+  checked: boolean;
+}
+
+export function getCardsStat() {
+  return request({
+    url: '/api/v1/cards/stat',
+    method: 'get',
+  })
+}
+
 

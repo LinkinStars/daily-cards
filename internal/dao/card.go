@@ -87,6 +87,17 @@ func GetCards(page, pageSize int) (cards []*model.Card, count int64, err error) 
 	return cards, count, nil
 }
 
+func GetCardsByTime(startTime, endTime time.Time) (cards []*model.Card, err error) {
+	cards = make([]*model.Card, 0)
+	session := db.Engine.Where("created_at >= ?", startTime)
+	session.Where("created_at <= ?", endTime)
+	err = session.Find(&cards)
+	if err != nil {
+		return nil, mistake.InternalServer("500", err.Error())
+	}
+	return cards, nil
+}
+
 func Markdown2HTML(source string) string {
 	mdConverter := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),

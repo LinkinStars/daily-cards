@@ -6,15 +6,16 @@ require (
 	github.com/LinkinStars/go-scaffold v0.0.1
 	github.com/LinkinStars/go-scaffold/contrib/log/zap v0.0.0-20220816084354-e872c6f1349d
 	github.com/LinkinStars/go-scaffold/contrib/static_config/file v0.0.0-20220816084354-e872c6f1349d
+	github.com/LinkinStars/golang-util v0.0.0-20220416093005-f5520ae2eb51
 	github.com/gin-gonic/gin v1.8.2
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
+	github.com/jinzhu/now v1.1.5
 	github.com/yuin/goldmark v1.4.13
 	modernc.org/sqlite v1.20.3
 	xorm.io/xorm v1.3.2
 )
 
 require (
-	github.com/LinkinStars/golang-util v0.0.0-20220416093005-f5520ae2eb51 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
