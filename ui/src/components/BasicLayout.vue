@@ -1,7 +1,8 @@
 <template>
   <div class="card-list-header">
-    <img src="/icon/favicon-60.png" alt="logo" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"/>
+    <img src="/icon/favicon-60.png" alt="logo" style="pointer-events: none;"/>
     <span @click="jumpCardPage()">{{ headerTitle }}</span>
+    <div class="carr-list-header-jumper" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"></div>
   </div>
   <div class="main-container">
     <router-view />
@@ -81,6 +82,13 @@ setupSiteInfo()
     height: 100%;
     overflow: auto;
   }
+}
+
+.carr-list-header-jumper {
+  width: 32px;
+  height: 32px;
+  position:absolute;
+  margin-left: 24px;
 }
 
 .main-container {
