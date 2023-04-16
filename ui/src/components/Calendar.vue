@@ -26,7 +26,6 @@ const curMonth = ref(nowDate.getMonth() + 1)
 var currentDate = new Date();
 currentDate.setDate(1);
 var firstDayOfWeek = currentDate.getDay();
-console.log("当前月份第一天是星期" + firstDayOfWeek);
 </script>
 
 <template>
