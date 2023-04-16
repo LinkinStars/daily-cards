@@ -50,7 +50,7 @@ const jumpPostPage = () => {
         <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
         <div class="card-footer">
-          <span>📅 {{ card.created_at }}</span>
+          <span>📅 {{ card.created_at }} 👀 {{ card.pv }}</span>
           <span @click="jumpCardDetailPage(card.id)">详情</span>
         </div>
       </div>

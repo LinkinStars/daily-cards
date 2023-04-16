@@ -38,6 +38,7 @@ type CardResp struct {
 	ID        int    `json:"id"`
 	CreatedAt string `json:"created_at"`
 	Content   string `json:"content"`
+	PV        int    `json:"pv"`
 }
 
 type GetCardDetailResp struct {

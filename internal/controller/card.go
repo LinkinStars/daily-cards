@@ -69,6 +69,8 @@ func DeleteCard(ctx *gin.Context) {
 }
 
 func GetCardsPage(ctx *gin.Context) {
+	_, isLogin := ctx.Get("username")
+
 	req := &val.GetCardPageReq{}
 	err := ctx.ShouldBind(req)
 	if err != nil {
@@ -88,10 +90,14 @@ func GetCardsPage(ctx *gin.Context) {
 		Cards:    make([]*val.CardResp, 0),
 	}
 	for _, c := range cards {
+		if !isLogin {
+			c.PV = 0
+		}
 		resp.Cards = append(resp.Cards, &val.CardResp{
 			ID:        c.ID,
 			CreatedAt: c.CreatedAt.Format("2006-01-02"),
 			Content:   c.ParsedText,
+			PV:        c.PV,
 		})
 	}
 	handler.HandleResponse(ctx, err, resp)
