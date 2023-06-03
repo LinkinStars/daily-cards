@@ -37,8 +37,13 @@ const getCardInfo = async () => {
 };
 
 const loadPreCard = async () => {
+  if (content.value.length > 0) {
+    if (!window.confirm("当前已经有内容，确定要重新加载吗？")) {
+      return;
+    }
+  }
   await loadCardInfo(0)
-  // 当加载上一次卡片的时候只需要加载内容，pv 的统计不需要添加
+  // 当加载上一次卡片的时候只需要加载内容，pv 的统计不需要加载
   pv.value = 0
   currentDate.value = today
 };

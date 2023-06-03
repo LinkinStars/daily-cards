@@ -65,7 +65,7 @@ const request = <T>(config: AxiosRequestConfig): Promise<BaseResponse<T>> => {
             alert(errorInfo.data.message)
             break
           default:
-            alert(errorInfo)
+            alert(errorInfo.statusText)
             break
         }
       }
