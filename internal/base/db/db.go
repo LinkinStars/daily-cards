@@ -22,6 +22,8 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
+	// fix sqlite3 database is locked
+	engine.SetMaxOpenConns(1)
 	err = engine.Ping()
 	if err != nil {
 		panic(err)
