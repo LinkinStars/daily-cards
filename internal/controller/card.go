@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/LinkinStars/dc/internal/base/config"
 	"github.com/LinkinStars/dc/internal/base/handler"
@@ -138,25 +139,23 @@ func GetCardDetail(ctx *gin.Context) {
 }
 
 func GetCardsStat(ctx *gin.Context) {
-	startTime := now.BeginningOfMonth()
-	endTime := now.EndOfMonth()
-	cards, err := dao.GetCardsByTime(startTime, endTime)
+	req := &val.GetCardsStatReq{}
+	if err := ctx.ShouldBind(req); err != nil {
+		return
+	}
+	
+	endTime := now.EndOfDay()
+	startTime := endTime.AddDate(-1, 0, 0)
+	records, err := dao.GetCardsRecord(startTime, endTime)
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
 		return
 	}
 
-	checkMapping := make(map[int]bool, 31)
-	for _, c := range cards {
-		checkMapping[c.CreatedAt.Day()] = true
-	}
-
-	resp := make([]*val.GetCardsStatResp, 0)
-	for i := 1; i <= endTime.Day(); i++ {
-		resp = append(resp, &val.GetCardsStatResp{
-			Day:     i,
-			Checked: checkMapping[i],
-		})
+	resp := &val.GetCardsStatResp{CheckedDays: make([]string, 0)}
+	for _, r := range records {
+		parsed, _ := time.Parse(time.RFC3339, r)
+		resp.CheckedDays = append(resp.CheckedDays, parsed.Format("2006-01-02"))
 	}
 	handler.HandleResponse(ctx, err, resp)
 }

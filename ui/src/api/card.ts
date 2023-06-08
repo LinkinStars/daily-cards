@@ -81,8 +81,7 @@ export function getCardsPage(page : number) {
 }
 
 export type CardStat = {
-  day: number;
-  checked: boolean;
+  checked_days: string[];
 }
 
 export function getCardsStat() {

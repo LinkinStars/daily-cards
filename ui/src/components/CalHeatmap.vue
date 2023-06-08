@@ -5,7 +5,7 @@ import * as localeData from 'dayjs/plugin/localeData';
 dayjs.extend(localeData);
 dayjs.locale('zh-cn');
 
-import { onMounted } from 'vue';
+import { ref } from 'vue';
 import CalHeatmap from 'cal-heatmap';
 import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import LegendLite from 'cal-heatmap/plugins/LegendLite';
@@ -14,139 +14,109 @@ import 'cal-heatmap/cal-heatmap.css';
 
 const cal: CalHeatmap = new CalHeatmap();
 
-function monthFormat(date) { return dayjs(date).format("MMMM")}
+function monthFormat(date) { return dayjs(date).format("MMMM") }
 
 function paintCalendar() {
-const calData = [
-  { date: '2023-01-01', value: 1 },
-  { date: '2023-01-02', value: 2 },
-  { date: '2023-01-03', value: 3 },
-  { date: '2023-01-04', value: 4 },
-  { date: '2023-01-05', value: 5 },
-  { date: '2023-01-06', value: 6 },
-  { date: '2023-01-07', value: 7 },
-  { date: '2023-01-08', value: 8 },
-  { date: '2023-01-09', value: 9 },
-  { date: '2023-01-10', value: 20 },
-  { date: '2023-01-11', value: 20 },
-  { date: '2023-01-12', value: 20 },
-  { date: '2023-01-13', value: 20 },
-  { date: '2023-01-14', value: 20 },
-  { date: '2023-01-15', value: 20 },
-  { date: '2023-01-16', value: 20 },
-  { date: '2023-01-17', value: 20 },
-  { date: '2023-01-18', value: 20 },
-  { date: '2023-01-19', value: 20 },
-  { date: '2023-01-20', value: 20 },
-  { date: '2023-01-21', value: 20 },
-  { date: '2023-01-22', value: 20 },
-  { date: '2023-01-23', value: 20 },
-  { date: '2023-01-24', value: 20 },
-  { date: '2023-01-25', value: 20 },
-  { date: '2023-01-26', value: 20 },
-  { date: '2023-01-27', value: 20 },
-  { date: '2023-01-28', value: 20 },
-  { date: '2023-01-29', value: 20 },
-  { date: '2023-01-30', value: 20 },
-  { date: '2023-01-31', value: 20 },
-  { date: '2023-02-01', value: 20 },
-  { date: '2023-02-02', value: 20 },
-  { date: '2023-02-03', value: 20 },
-  { date: '2023-02-04', value: 20 },
-  { date: '2023-02-05', value: 20 },
-  { date: '2023-02-06', value: 20 },
-  { date: '2023-02-07', value: 20 },
-  { date: '2023-02-08', value: 20 },
-  { date: '2023-02-09', value: 20 },
-  { date: '2023-02-10', value: 20 },
-  { date: '2023-02-11', value: 20 },
-  { date: '2023-02-12', value: 20 },
-  { date: '2023-02-13', value: 20 },
-  { date: '2023-02-14', value: 20 },
-  { date: '2023-02-15', value: 20 },
-  { date: '2023-02-16', value: 20 },
-  { date: '2023-02-17', value: 20 },
-  { date: '2023-02-18', value: 49 },
-  { date: '2023-02-19', value: 50 },
-  { date: '2023-02-20', value: 51 },
-  { date: '2023-02-21', value: 52 },
-  { date: '2023-06-08', value: 15 },
-];
+  const today: Date = new Date(); // 获取今天的日期
+  const nextMonth: Date = new Date(today.getFullYear() - 1, today.getMonth() + 2, 1); // 获取下一个月的第一天
+  const formattedDate: string = nextMonth.toISOString().slice(0, 10); // 将日期格式化为 'YYYY-MM-DD'
+  console.log(formattedDate); // 输出：'2019-07-01'
 
   cal.paint(
-  {
-    data: { source: calData, x: 'date', y: 'value' },
-    date: { 
-      locale: { name:'zh-cn', weekStart: 1 },
-      start: new Date('2023-01-01'),
-    },
-    range: 12,
-    scale: {
-      color: {
-        //type: 'threshold',
-        range: ['#8E949E',  '#166b34', '#37a446', '#4dd05a'],
-        //domain: [10, 20, 30],
-        domain: [0, 5, 10, 15, 20, 25, 30],
-        type: 'ordinal',
+    {
+      data: { source: calData.value, x: 'date', y: 'value' },
+      date: {
+        locale: { 'name': 'zh-cn', 'weekStart': 1 },
+        start: new Date(formattedDate),
       },
-    },
-    domain: {
-      type: 'month',
-      gutter: 4,
-      label: { text: monthFormat, textAlign: 'start', position: 'top' },
-    },
-    subDomain: { 
-      type: 'ghDay', 
-      radius: 2, 
-      width: 15, 
-      height: 15, 
-      gutter: 4,
-    },
-  },
-  [
-    [
-      Tooltip,
-      {
-        text: function (date, value, dayjsDate) {
-          return (
-            dayjs(date).format('YYYY-MM-DD') + " " + (value ? '已打卡' : '未打卡')
-          );
+      range: 12,
+      scale: {
+        color: {
+          //type: 'threshold',
+          range: ['#8E949E', '#166b34', '#37a446', '#4dd05a'],
+          //domain: [10, 20, 30],
+          domain: [0, 5, 10, 15, 20, 25, 30],
+          type: 'ordinal',
         },
       },
-    ],
-    [
-      CalendarLabel,
-      {
-        width: 30,
-        textAlign: 'start',
-        text: () => dayjs.weekdaysShort(),
-        padding: [25, 0, 0, 0],
+      domain: {
+        type: 'month',
+        gutter: 4,
+        label: { text: monthFormat, textAlign: 'start', position: 'top' },
       },
-    ],
-  ]
-);
+      subDomain: {
+        type: 'ghDay',
+        radius: 2,
+        width: 15,
+        height: 15,
+        gutter: 4,
+      },
+    },
+    [
+      [
+        Tooltip,
+        {
+          text: function (date, value, dayjsDate) {
+            return (
+              dayjs(date).format('YYYY-MM-DD') + " " + (value ? '已打卡' : '未打卡')
+            );
+          },
+        },
+      ],
+      [
+        CalendarLabel,
+        {
+          width: 30,
+          textAlign: 'start',
+          text: () => dayjs.weekdaysShort(),
+          padding: [25, 0, 0, 0],
+        },
+      ],
+    ]
+  );
 }
 
-onMounted(() => paintCalendar());
+import { getCardsStat } from "@/api/card";
+interface CheckData {
+  date: string;
+  value: number;
+}
+
+const calData = ref<CheckData[]>([]);
+const setCardsStat = async () => {
+  const resp = await getCardsStat();
+  if (resp.code != 200) {
+    return;
+  }
+  for (let i = 0; i < resp.data.checked_days.length; i++) {
+    const date = resp.data.checked_days[i];
+    const value = 15;
+    calData.value.push({ date, value });
+  }
+  paintCalendar()
+}
+setCardsStat();
 
 </script>
 
 <template>
-<div id="heatmap" class="heatmap-bg">
-  <div id="cal-heatmap"></div>
-</div>
+  <div id="heatmap" class="heatmap-bg">
+    <div id="cal-heatmap"></div>
+  </div>
 </template>
 
 <style>
 .heatmap-bg {
   display: flex;
   justify-content: center;
-  background: #eceef0;
+  /* background: #eceef0; */
+  background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
 }
-@media (max-width: 1000px) {
+
+@media (max-width: 1100px) {
   #heatmap {
     display: none;
   }

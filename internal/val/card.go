@@ -52,7 +52,10 @@ type GetCardDetailResp struct {
 	PV           int    `json:"pv"`
 }
 
+type GetCardsStatReq struct {
+	StartTime string `form:"start_time"`
+}
+
 type GetCardsStatResp struct {
-	Day     int  `json:"day"`
-	Checked bool `json:"checked"`
+	CheckedDays []string `json:"checked_days"`
 }

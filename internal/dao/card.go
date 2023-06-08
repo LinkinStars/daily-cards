@@ -98,6 +98,19 @@ func GetCardsByTime(startTime, endTime time.Time) (cards []*model.Card, err erro
 	return cards, nil
 }
 
+func GetCardsRecord(startTime, endTime time.Time) (recordTime []string, err error) {
+	recordTime = make([]string, 0)
+	session := db.Engine.Table("card")
+	session.Select("created_at")
+	session.Where("created_at >= ?", startTime)
+	session.Where("created_at <= ?", endTime)
+	err = session.Find(&recordTime)
+	if err != nil {
+		return nil, mistake.InternalServer("500", err.Error())
+	}
+	return recordTime, nil
+}
+
 func Markdown2HTML(source string) string {
 	mdConverter := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),

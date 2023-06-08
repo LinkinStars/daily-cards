@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
-import Calendar from "@/components/Calendar.vue"
+import CalHeatmap from "@/components/CalHeatmap.vue"
 
 const router = useRouter();
 
@@ -45,7 +45,7 @@ const jumpPostPage = () => {
 <template>
   <div class="card-list-bg">
     <div class="card-list">
-      <Calendar />
+      <CalHeatmap />
       <div class="card-list-item" v-for="card in cards" :key="card.id">
         <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
@@ -120,7 +120,7 @@ const jumpPostPage = () => {
   padding: 10px;
   margin: 0 auto 10px auto;
   text-align: center;
-  background: #eceef0;
+  background: #ffffff;
   border-radius: 10px;
 }
 

@@ -94,7 +94,7 @@ const jumpCardDetailPage = (id: number) => {
   padding: 10px;
   margin: 0 auto 10px auto;
   text-align: center;
-  background: #eceef0;
+  background: #ffffff;
   border-radius: 10px;
 }
 
