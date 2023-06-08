@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn';
-import * as localeData from 'dayjs/plugin/localeData';
+import localeData from 'dayjs/plugin/localeData';
 dayjs.extend(localeData);
 dayjs.locale('zh-cn');
 
