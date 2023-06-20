@@ -16,20 +16,30 @@ const cal: CalHeatmap = new CalHeatmap();
 
 function monthFormat(date) { return dayjs(date).format("MMMM") }
 
-function paintCalendar() {
-  const today: Date = new Date(); // 获取今天的日期
-  const nextMonth: Date = new Date(today.getFullYear() - 1, today.getMonth() + 2, 1); // 获取下一个月的第一天
-  const formattedDate: string = nextMonth.toISOString().slice(0, 10); // 将日期格式化为 'YYYY-MM-DD'
-  console.log(formattedDate); // 输出：'2019-07-01'
+const preYearDate: Date = dayjs().subtract(11, 'month').startOf('month');
+const preYearStr: string = preYearDate.format('YYYY-MM-DD');
+const pre3MonthDate: Date = dayjs().subtract(2, 'month').startOf('month');
+const pre3MonthStr: string = pre3MonthDate.format('YYYY-MM-DD');
 
+function refreshCalendar(x) {
+    if (x.matches) {
+      // 手机端仅展示三个月
+      paintCalendar(pre3MonthStr, 3);
+    } else {
+      // 电脑短展示一年
+      paintCalendar(preYearStr, 12);
+    }
+}
+ 
+function paintCalendar(startTime : string, dateRange : int) {
   cal.paint(
     {
       data: { source: calData.value, x: 'date', y: 'value' },
       date: {
         locale: { 'name': 'zh-cn', 'weekStart': 1 },
-        start: new Date(formattedDate),
+        start: new Date(startTime),
       },
-      range: 12,
+      range: dateRange,
       scale: {
         color: {
           //type: 'threshold',
@@ -94,6 +104,9 @@ const setCardsStat = async () => {
     calData.value.push({ date, value });
   }
   paintCalendar()
+  var mwMatchMedia = window.matchMedia("(max-width: 1100px)")
+  refreshCalendar(mwMatchMedia)
+  mwMatchMedia.addListener(refreshCalendar)
 }
 setCardsStat();
 
@@ -118,7 +131,7 @@ setCardsStat();
 
 @media (max-width: 1100px) {
   #heatmap {
-    display: none;
+    /*display: none;*/
   }
 }
 </style>
