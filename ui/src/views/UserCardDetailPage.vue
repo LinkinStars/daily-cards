@@ -84,7 +84,7 @@ getCardByID();
 }
 .card-detail-btn {
   display: flex;
-  justify-content: space-around;
+  gap: 10px;
 }
 @media screen and (max-width: 768px) {
   .card-detail-btn {

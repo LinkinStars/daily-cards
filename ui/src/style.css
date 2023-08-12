@@ -3,8 +3,8 @@
   line-height: 24px;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #ffffff;
 
   font-synthesis: weight;
   -webkit-font-smoothing: antialiased;
@@ -41,29 +41,10 @@ body {
   width: 100%;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 @media (prefers-color-scheme: dark) { 
-  :root {
-    color: #213547;
+  textarea, input {
+    color: #213547 !important;
     background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
   }
 }
 

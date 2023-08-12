@@ -103,9 +103,10 @@ getCardInfo();
       </div>
       <div style="height: 20px"></div>
       <div class="card-edit-btn">
+        
         <button @click="jumpCardPage()">返回</button>
-        <button @click="addContent('- [ ] ')">todo</button>
-        <button @click="addContent('- ')">item</button>
+        <button @click="addContent('- [ ] ')">TODO</button>
+        <button @click="addContent('- ')">ITEM</button>
         <button @click="loadPreCard()">加载最新</button>
         <button @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
       </div>
@@ -171,10 +172,8 @@ getCardInfo();
   vertical-align: top;
   box-sizing: border-box;
   border: none;
-  border-right: 1px solid #ccc;
   resize: none;
   outline: none;
-  background-color: #f6f6f6;
   font-size: 14px;
   padding: 20px;
 }
