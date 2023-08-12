@@ -80,14 +80,20 @@ export function getCardsPage(page : number) {
   })
 }
 
+export type GetCardsStatReq = {
+  start_time: string;
+}
+
 export type CardStat = {
   checked_days: string[];
 }
 
-export function getCardsStat() {
+export function getCardsStat(startTime : string) {
+  const params: GetCardsStatReq = { start_time : startTime }
   return request({
     url: '/api/v1/cards/stat',
     method: 'get',
+    params
   })
 }
 

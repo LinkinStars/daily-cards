@@ -143,9 +143,15 @@ func GetCardsStat(ctx *gin.Context) {
 	if err := ctx.ShouldBind(req); err != nil {
 		return
 	}
-	
+
 	endTime := now.EndOfDay()
-	startTime := endTime.AddDate(-1, 0, 0)
+	var startTime time.Time
+	if len(req.StartTime) > 0 {
+		startTime, _ = time.Parse("2006-01-02", req.StartTime)
+	}
+	if startTime.IsZero() {
+		startTime = endTime.AddDate(-1, 0, 0)
+	}
 	records, err := dao.GetCardsRecord(startTime, endTime)
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
