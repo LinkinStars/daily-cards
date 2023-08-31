@@ -57,6 +57,7 @@
 - Secret: 秘钥，用于加密jwt
 - SiteName: 网站名称
 - ShowQrcode: 是否展示二维码
+- HideLinkCorner: 是否隐藏 GitHub 链接
 
 ## Notice
 - 数据存储在 `daily-cards.db` 文件中，所以你只需要备份这个文件数据就不会丢

@@ -29,14 +29,15 @@ ShowQrcode: true
 )
 
 type Conf struct {
-	WebPort    string
-	Username   string
-	Password   string
-	SiteName   string
-	ShowQrcode bool
-	Nickname   string
-	Avatar     string
-	Secret     string
+	WebPort        string
+	Username       string
+	Password       string
+	SiteName       string
+	ShowQrcode     bool
+	Nickname       string
+	Avatar         string
+	Secret         string
+	HideLinkCorner bool
 }
 
 func setDefault() {

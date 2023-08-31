@@ -5,6 +5,7 @@ export type GetSiteInfoResp = {
     nickname: string;
     avatar:   string;
     show_qrcode: boolean;
+    hide_link_corner: boolean;
 }
 
 export function getSiteInfo() {

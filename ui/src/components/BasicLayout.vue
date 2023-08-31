@@ -1,6 +1,7 @@
 <template>
+  <LinkCorner v-if="!hideLinkCorner"></LinkCorner>
   <div class="card-list-header">
-    <img src="/icon/favicon-60.png" alt="logo" style="pointer-events: none;"/>
+    <img src="/icon/favicon-60.png" alt="logo" style="pointer-events: none" />
     <span @click="jumpCardPage()">{{ headerTitle }}</span>
     <div class="carr-list-header-jumper" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"></div>
   </div>
@@ -10,30 +11,33 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref } from "vue";
+import LinkCorner from "./LinkCorner.vue";
 import { getSiteInfo } from "../api/site";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const headerTitle = ref("Daily Cards")
+const headerTitle = ref("Daily Cards");
+const hideLinkCorner = ref(true);
 
 const setupSiteInfo = async () => {
   const resp = await getSiteInfo();
   if (resp.code === 200 && resp.data.site_name.length > 0) {
     headerTitle.value = resp.data.site_name;
+    hideLinkCorner.value = resp.data.hide_link_corner;
     localStorage.setItem("siteInfo", JSON.stringify(resp.data));
     // 如果 token 存在且 token 过期, 直接删除并跳转登录
-    let token = localStorage.getItem('accessToken')
+    let token = localStorage.getItem("accessToken");
     if (token && !resp.data.is_login) {
-       localStorage.removeItem("accessToken"); 
-       router.push({ name: "user-login" });
+      localStorage.removeItem("accessToken");
+      router.push({ name: "user-login" });
     }
   }
 };
 
 const jumpCardPage = async () => {
   const resp = await getSiteInfo();
-  let token = localStorage.getItem('accessToken')
+  let token = localStorage.getItem("accessToken");
   if (token && resp.code === 200 && resp.data.is_login) {
     router.push({ name: "user-card-page" });
   } else {
@@ -42,14 +46,14 @@ const jumpCardPage = async () => {
 };
 
 const jumpToLoginPage = async () => {
-    router.push({ name: "user-login" });
+  router.push({ name: "user-login" });
 };
-setupSiteInfo()
+setupSiteInfo();
 </script>
 
 <style>
-.card-list-header{
-  background-color: #F7F9FE;
+.card-list-header {
+  background-color: #f7f9fe;
   width: 100%;
   height: 60px;
   display: flex;
@@ -57,7 +61,7 @@ setupSiteInfo()
   justify-content: space-between;
   align-items: center;
   position: fixed;
-  z-index: 9999;
+  z-index: 99;
   overflow: hidden;
 }
 
@@ -87,7 +91,7 @@ setupSiteInfo()
 .carr-list-header-jumper {
   width: 32px;
   height: 32px;
-  position:absolute;
+  position: absolute;
   margin-left: 24px;
 }
 

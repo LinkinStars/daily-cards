@@ -10,11 +10,12 @@ import (
 func GetSiteInfo(ctx *gin.Context) {
 	_, isLogin := ctx.Get("username")
 	resp := &val.GetSiteInfoResp{
-		SiteName:   config.GlobalConf.SiteName,
-		ShowQrcode: config.GlobalConf.ShowQrcode,
-		Avatar:     config.GlobalConf.Avatar,
-		Nickname:   config.GlobalConf.Nickname,
-		IsLogin:    isLogin,
+		SiteName:       config.GlobalConf.SiteName,
+		ShowQrcode:     config.GlobalConf.ShowQrcode,
+		Avatar:         config.GlobalConf.Avatar,
+		Nickname:       config.GlobalConf.Nickname,
+		IsLogin:        isLogin,
+		HideLinkCorner: config.GlobalConf.HideLinkCorner,
 	}
 	handler.HandleResponse(ctx, nil, resp)
 }
