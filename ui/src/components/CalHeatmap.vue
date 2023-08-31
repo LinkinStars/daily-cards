@@ -16,9 +16,9 @@ const cal: CalHeatmap = new CalHeatmap();
 
 function monthFormat(date) { return dayjs(date).format("MMMM") }
 
-const preYearDate: Date = dayjs().subtract(11, 'month').startOf('month');
+const preYearDate: Date = dayjs().subtract(11, 'month').startOf('month').add(1, 'month');
 const preYearStr: string = preYearDate.format('YYYY-MM-DD');
-const pre3MonthDate: Date = dayjs().subtract(2, 'month').startOf('month');
+const pre3MonthDate: Date = dayjs().subtract(2, 'month').startOf('month').add(1, 'month');
 const pre3MonthStr: string = pre3MonthDate.format('YYYY-MM-DD');
 
 function refreshCalendar(x) {
