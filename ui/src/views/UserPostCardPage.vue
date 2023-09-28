@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { addCard, updateCard, getCard } from "@/api/card.ts";
+import { saveDraft, readDraft, removeDraft } from "@/utils/post-draft.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -33,6 +34,11 @@ const today = currentDate.value;
 const getCardInfo = async () => {
   if (cardID.value > 0) {
     loadCardInfo(cardID.value)
+    return
+  }
+  let draft = readDraft()
+  if (draft) {
+    content.value = draft
   }
 };
 
@@ -47,7 +53,6 @@ const loadPreCard = async () => {
   pv.value = 0
   currentDate.value = today
 };
-
 
 const loadCardInfo = async (id : number) => {
     const res = await getCard(id);
@@ -64,6 +69,7 @@ const postCard = async () => {
   if (cardID.value > 0) {
     const res = await updateCard(cardID.value, content.value, currentDate.value);
     if (res.code === 200) {
+      removeDraft()
       router.push({
         name: "user-card-detail",
         params: { id: cardID.value },
@@ -72,6 +78,7 @@ const postCard = async () => {
   } else {
     const res = await addCard(content.value);
     if (res.code === 200) {
+      removeDraft()
       router.push({ name: "user-card-page" });
     }
   }
@@ -90,6 +97,10 @@ const jumpCardPage = async () => {
 };
 
 getCardInfo();
+
+const inputPost = () => {
+  saveDraft(content.value)
+};
 </script>
 
 <template>
@@ -99,7 +110,7 @@ getCardInfo();
       <div><input class="card-edit-date-input" v-model="currentDate"/> {{ "PV:" + pv }}</div>
       <div style="height: 20px"></div>
       <div class="card-editor">
-        <textarea autofocus v-model="content" rows="20"></textarea>
+        <textarea autofocus v-model="content" rows="20" @input="inputPost"></textarea>
       </div>
       <div style="height: 20px"></div>
       <div class="card-edit-btn">
