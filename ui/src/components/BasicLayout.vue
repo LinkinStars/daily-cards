@@ -6,7 +6,7 @@
     <div class="carr-list-header-jumper" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"></div>
   </div>
   <div class="main-container">
-    <router-view />
+    <router-view :key="route.path" />
   </div>
 </template>
 
@@ -14,8 +14,9 @@
 import { ref } from "vue";
 import LinkCorner from "./LinkCorner.vue";
 import { getSiteInfo } from "../api/site";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
 
 const headerTitle = ref("Daily Cards");
 const hideLinkCorner = ref(true);

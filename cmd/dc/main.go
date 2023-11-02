@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"github.com/LinkinStars/dc/internal/base/config"
 	"github.com/LinkinStars/dc/internal/base/db"
 	"github.com/LinkinStars/dc/internal/base/router"

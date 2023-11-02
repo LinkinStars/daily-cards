@@ -77,6 +77,24 @@ func GetCardDetail(id int) (card *model.Card, err error) {
 	return card, nil
 }
 
+func GetCardDetailByOffset(id, offset int) (card *model.Card, err error) {
+	cards := make([]*model.Card, 0)
+	session := db.Engine.NewSession()
+	if offset > 0 {
+		session.Asc("id").Where("id > ?", id)
+	} else {
+		session.Desc("id").Where("id < ?", id)
+	}
+	err = session.Limit(1).Find(&cards)
+	if err != nil {
+		return nil, mistake.InternalServer("500", err.Error())
+	}
+	if len(cards) > 0 {
+		return cards[0], nil
+	}
+	return nil, nil
+}
+
 func GetCards(page, pageSize int) (cards []*model.Card, count int64, err error) {
 	cards = make([]*model.Card, 0)
 	startNum := (page - 1) * pageSize

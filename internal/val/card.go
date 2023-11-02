@@ -20,7 +20,8 @@ type UpdateCardReq struct {
 }
 
 type GetCardDetailReq struct {
-	ID int `form:"id"`
+	ID     int `form:"id"`
+	Offset int `form:"offset"`
 }
 
 type GetCardPageReq struct {

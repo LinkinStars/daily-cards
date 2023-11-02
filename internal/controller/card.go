@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/LinkinStars/dc/internal/model"
 	"net/http"
 	"time"
 
@@ -113,14 +114,22 @@ func GetCardDetail(ctx *gin.Context) {
 		return
 	}
 
-	c, err := dao.GetCardDetail(req.ID)
+	var c *model.Card
+	if req.Offset == 0 {
+		c, err = dao.GetCardDetail(req.ID)
+		if e := dao.AddCardPv(req.ID, 1); e != nil {
+			logger.Error(e)
+		}
+	} else {
+		c, err = dao.GetCardDetailByOffset(req.ID, req.Offset)
+	}
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
 		return
 	}
-
-	if e := dao.AddCardPv(req.ID, 1); e != nil {
-		logger.Error(e)
+	if c == nil {
+		handler.HandleResponse(ctx, mistake.BadRequest("", "没有更多了"), nil)
+		return
 	}
 
 	resp := &val.GetCardDetailResp{

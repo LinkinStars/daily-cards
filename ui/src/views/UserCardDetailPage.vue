@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Card from "../components/Card.vue";
-import { getCard } from "../api/card";
+import { getCard, getCardWithOffset } from "../api/card";
 import { useRoute, useRouter } from "vue-router";
 import { deleteCard } from "@/api/card.ts";
 
@@ -32,6 +32,20 @@ const jumpUpdateCardPage = async () => {
   });
 };
 
+const otherCardDetailPage = async (offset: number) => {
+  const res = await getCardWithOffset(cardID.value, offset);
+  if (res.code == 200) {
+    router.push({
+      name: "user-card-detail",
+      params: {
+        id: res.data.id,
+      },
+    });
+  } else {
+    alert("已无数据");
+  }
+};
+
 const jumpCardPage = async () => {
   router.push({ name: "user-card-page" });
 };
@@ -56,9 +70,11 @@ getCardByID();
       <Card :id="cardID" />
       <div style="height: 20px"></div>
       <div class="card-detail-btn">
+        <button @click="otherCardDetailPage(-1)">上一张</button>
         <button @click="jumpCardPage()">返回</button>
         <button @click="jumpUpdateCardPage()">修改</button>
         <button @click="deleteCardByID()">删除</button>
+        <button @click="otherCardDetailPage(+1)">下一张</button>
       </div>
     </div>
   </div>

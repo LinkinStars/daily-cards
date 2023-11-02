@@ -43,10 +43,20 @@ export function deleteCard(id : number) {
 
 export type GetCardReq = {
   id: number
+  offset: number
 }
 
 export function getCard(id : number) {
   const params: GetCardReq = { id: id }
+  return request({
+    url: '/api/v1/card',
+    method: 'get',
+    params
+  })
+}
+
+export function getCardWithOffset(id : number, offset : number) {
+  const params: GetCardReq = { id: id, offset: offset }
   return request({
     url: '/api/v1/card',
     method: 'get',
