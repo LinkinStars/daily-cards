@@ -65,7 +65,9 @@ const loadCardInfo = async (id : number) => {
     currentDate.value = res.data.created_at;
 }
 
+const postButtonFlag = ref(false);
 const postCard = async () => {
+  postButtonFlag.value = true;
   if (cardID.value > 0) {
     const res = await updateCard(cardID.value, content.value, currentDate.value);
     if (res.code === 200) {
@@ -82,6 +84,7 @@ const postCard = async () => {
       router.push({ name: "user-card-page" });
     }
   }
+  postButtonFlag.value = false;
 };
 
 const addContent = (c: string) => {
@@ -119,7 +122,7 @@ const inputPost = () => {
         <button @click="addContent('- [ ] ')">TODO</button>
         <button @click="addContent('- ')">ITEM</button>
         <button @click="loadPreCard()">加载最新</button>
-        <button @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
+        <button :disabled="postButtonFlag" @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
       </div>
     </div>
   </div>
@@ -133,22 +136,11 @@ const inputPost = () => {
 
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
-  animation: gradient 10s ease infinite;
-  
+
   width: 100%;
   min-height: 100%;
 }
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+
 .card-edit-container {
   padding: 60px 20px 0 20px;
   min-height: calc(100% - 60px);
