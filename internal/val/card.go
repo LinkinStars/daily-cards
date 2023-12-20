@@ -25,7 +25,8 @@ type GetCardDetailReq struct {
 }
 
 type GetCardPageReq struct {
-	Page int `form:"page"`
+	Page          int    `form:"page"`
+	SearchKeyword string `form:"search_keyword"`
 }
 
 type GetCardPageResp struct {

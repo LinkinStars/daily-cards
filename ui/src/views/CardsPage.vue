@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
@@ -8,13 +8,14 @@ import Calendar from "@/components/Calendar.vue"
 import CalHeatmap from '@/components/CalHeatmap.vue';
 
 const router = useRouter();
+const route = useRoute();
 
 const cards = ref<Card[]>([]);
 let page = 1;
 let pageSize = 20;
 const load = async ($state) => {
   try {
-    const resp = await getCardsPage(page);
+    const resp = await getCardsPage(page, route.query.q as string);
     cards.value.push(...resp.data.cards);
     if (resp.data.cards.length < pageSize) $state.complete();
     else {
@@ -64,19 +65,6 @@ const jumpCardDetailPage = (id: number) => {
   min-height: 100vh;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
-  animation: gradient 10s ease infinite;
-}
-
-@keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-      }
-    50% {
-      background-position: 100% 50%;
-      }
-    100% {
-      background-position: 0% 50%;
-      }
 }
 
 .card-list {

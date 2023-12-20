@@ -79,7 +79,7 @@ func GetCardsPage(ctx *gin.Context) {
 		return
 	}
 
-	cards, count, err := dao.GetCards(req.Page, 20)
+	cards, count, err := dao.GetCards(req.Page, 20, req.SearchKeyword)
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
 		return

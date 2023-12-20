@@ -3,10 +3,11 @@
   <div class="card-list-header">
     <img src="/icon/favicon-60.png" alt="logo" style="pointer-events: none" />
     <span @click="jumpCardPage()">{{ headerTitle }}</span>
-    <div class="carr-list-header-jumper" v-touch:tap="jumpCardPage" v-touch:longtap="jumpToLoginPage"></div>
+    <div class="carr-list-header-jumper" v-touch:tap="clearQueryAndJumpCardPage" v-touch:longtap="jumpToLoginPage"></div>
+    <input type="text" v-model="searchText" placeholder="搜索" @keyup.enter.native="jumpCardPage()"/>
   </div>
   <div class="main-container">
-    <router-view :key="route.path" />
+    <router-view :key="route.query" />
   </div>
 </template>
 
@@ -20,6 +21,7 @@ const route = useRoute();
 
 const headerTitle = ref("Daily Cards");
 const hideLinkCorner = ref(true);
+const searchText = ref("")
 
 const setupSiteInfo = async () => {
   const resp = await getSiteInfo();
@@ -36,13 +38,18 @@ const setupSiteInfo = async () => {
   }
 };
 
+const clearQueryAndJumpCardPage = () => {
+  searchText.value = "";
+  jumpCardPage();
+};
+
 const jumpCardPage = async () => {
   const resp = await getSiteInfo();
   let token = localStorage.getItem("accessToken");
   if (token && resp.code === 200 && resp.data.is_login) {
-    router.push({ name: "user-card-page" });
+    router.push({ name: "user-card-page", query: { q: searchText.value } });
   } else {
-    router.push({ name: "card-page" });
+    router.push({ name: "card-page", query: { q: searchText.value }});
   }
 };
 
@@ -59,7 +66,7 @@ setupSiteInfo();
   height: 60px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   position: fixed;
   z-index: 99;
@@ -71,9 +78,24 @@ setupSiteInfo();
   font-size: 24px;
   font-weight: bold;
   line-height: 1;
-  width: 100%;
+  /* width: 100%; */
   text-align: left;
   margin-left: 12px;
+}
+
+.card-list-header input {
+  width: 20%;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid #eaeaea;
+  padding: 0 12px;
+  margin-left: 12px;
+}
+
+@media (max-width: 768px) {
+  .card-list-header input {
+    display: none;
+  }
 }
 
 .card-list-header img {

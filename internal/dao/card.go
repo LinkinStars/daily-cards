@@ -95,10 +95,14 @@ func GetCardDetailByOffset(id, offset int) (card *model.Card, err error) {
 	return nil, nil
 }
 
-func GetCards(page, pageSize int) (cards []*model.Card, count int64, err error) {
+func GetCards(page, pageSize int, keyword string) (cards []*model.Card, count int64, err error) {
 	cards = make([]*model.Card, 0)
 	startNum := (page - 1) * pageSize
-	count, err = db.Engine.Desc("created_at").Limit(pageSize, startNum).FindAndCount(&cards)
+	session := db.Engine.Desc("created_at")
+	if len(keyword) > 0 {
+		session.Where("original_text LIKE ?", "%"+keyword+"%")
+	}
+	count, err = session.Limit(pageSize, startNum).FindAndCount(&cards)
 	if err != nil {
 		return nil, 0, mistake.InternalServer("500", err.Error())
 	}

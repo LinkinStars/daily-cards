@@ -1,5 +1,8 @@
 .PHONY: ui go all
 
+rollback:
+	@mv ui.go ./static/
+
 ui:
 	@mv static/ui.go .
 	@cd ui && yarn && yarn build --emptyOutDir && cd ..
