@@ -5,33 +5,37 @@ import localeData from 'dayjs/plugin/localeData';
 dayjs.extend(localeData);
 dayjs.locale('zh-cn');
 
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
 import CalHeatmap from 'cal-heatmap';
 import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import LegendLite from 'cal-heatmap/plugins/LegendLite';
 import CalendarLabel from 'cal-heatmap/plugins/CalendarLabel';
 import 'cal-heatmap/cal-heatmap.css';
 
+const emit = defineEmits(['clickBox']);
 const cal: CalHeatmap = new CalHeatmap();
 
 function monthFormat(date) { return dayjs(date).format("MMMM") }
 
-const preYearDate: Date = dayjs().subtract(11, 'month').startOf('month').add(1, 'month');
-const preYearStr: string = preYearDate.format('YYYY-MM-DD');
-const pre3MonthDate: Date = dayjs().subtract(2, 'month').startOf('month').add(1, 'month');
-const pre3MonthStr: string = pre3MonthDate.format('YYYY-MM-DD');
-
 function refreshCalendar(x) {
+    let duration = 12;
+    let dateRange = 12;
+    
+    // 手机端仅展示三个月
     if (x.matches) {
-      // 手机端仅展示三个月
-      paintCalendar(pre3MonthStr, 3);
-    } else {
-      // 电脑短展示一年
-      paintCalendar(preYearStr, 12);
+      duration = 3;
+      dateRange = 3;
     }
+
+    // 当超过 20 号之后，如果这个月有 31 天会导致显示不全，所以需要额外显示下个月多出来的几天
+    if (dayjs().day() > 20) {
+      duration = duration - 1;
+    }
+    let startTime = dayjs().subtract(duration, 'month').startOf('month').add(1, 'month').format('YYYY-MM-DD');
+    paintCalendar(startTime, dateRange);
 }
  
-function paintCalendar(startTime : string, dateRange : int) {
+function paintCalendar(startTime : string, dateRange : number) {
   cal.paint(
     {
       data: { source: calData.value, x: 'date', y: 'value' },
@@ -78,12 +82,16 @@ function paintCalendar(startTime : string, dateRange : int) {
         {
           width: 30,
           textAlign: 'start',
-          text: () => dayjs.weekdaysShort(),
+          text: () => ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
           padding: [25, 0, 0, 0],
         },
       ],
     ]
   );
+  cal.on('click', (event, timestamp, value) => {
+    const date = dayjs(timestamp).format('YYYY-MM-DD');
+    emit('clickBox', date)
+  });
 }
 
 import { getCardsStat } from "@/api/card";
