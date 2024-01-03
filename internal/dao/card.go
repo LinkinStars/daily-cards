@@ -3,6 +3,7 @@ package dao
 import (
 	"bytes"
 	"fmt"
+	"github.com/jinzhu/now"
 	"time"
 
 	"github.com/LinkinStars/dc/internal/base/db"
@@ -95,12 +96,22 @@ func GetCardDetailByOffset(id, offset int) (card *model.Card, err error) {
 	return nil, nil
 }
 
-func GetCards(page, pageSize int, keyword string) (cards []*model.Card, count int64, err error) {
+func GetCards(page, pageSize int, keyword, date string) (cards []*model.Card, count int64, err error) {
 	cards = make([]*model.Card, 0)
 	startNum := (page - 1) * pageSize
 	session := db.Engine.Desc("created_at")
 	if len(keyword) > 0 {
 		session.Where("original_text LIKE ?", "%"+keyword+"%")
+	}
+	if len(date) > 0 {
+		dateTime, err := time.Parse(time.DateOnly, date)
+		if err == nil {
+			cur := now.New(dateTime)
+			start := cur.BeginningOfDay()
+			end := cur.EndOfDay()
+			session.Where("created_at >= ?", start.Format(time.DateTime))
+			session.Where("created_at <= ?", end.Format(time.DateTime))
+		}
 	}
 	count, err = session.Limit(pageSize, startNum).FindAndCount(&cards)
 	if err != nil {
@@ -124,6 +135,7 @@ func GetCardsRecord(startTime, endTime time.Time) (recordTime []string, err erro
 	recordTime = make([]string, 0)
 	session := db.Engine.Table("card")
 	session.Select("created_at")
+	session.Where("deleted_at IS NULL")
 	session.Where("created_at >= ?", startTime)
 	session.Where("created_at <= ?", endTime)
 	err = session.Find(&recordTime)
