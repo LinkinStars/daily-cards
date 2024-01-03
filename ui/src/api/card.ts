@@ -67,6 +67,7 @@ export function getCardWithOffset(id : number, offset : number) {
 export type GetCardsPageReq = {
   page: number
   search_keyword?: string
+  search_date?: string
 }
 
 export type GetCardsPageResp = {
@@ -82,8 +83,8 @@ export type Card = {
     content:    string;
 }
 
-export function getCardsPage(page : number, searchKeyword : string) {
-  const params: GetCardsPageReq = { page: page, search_keyword: searchKeyword }
+export function getCardsPage(page : number, searchKeyword : string, searchDate : string) {
+  const params: GetCardsPageReq = { page: page, search_keyword: searchKeyword , search_date: searchDate}
   return request({
     url: '/api/v1/cards',
     method: 'get',

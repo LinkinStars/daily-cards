@@ -14,7 +14,7 @@ let page = 1;
 let pageSize = 20;
 const load = async ($state) => {
   try {
-    const resp = await getCardsPage(page, route.query.q as string);
+    const resp = await getCardsPage(page, route.query.q as string, route.query.d as string);
     cards.value.push(...resp.data.cards);
     if (resp.data.cards.length < pageSize) $state.complete();
     else {
@@ -41,12 +41,16 @@ const jumpPostPage = () => {
     params: { id: 0 },
   });
 };
+
+const jumpDayCardPage = async (date : string) => {
+  router.push({ name: "user-card-page", query: { d: date }});
+};
 </script>
 
 <template>
   <div class="card-list-bg">
     <div class="card-list">
-      <CalHeatmap />
+      <CalHeatmap @clickBox="jumpDayCardPage" />
       <div class="card-list-item" v-for="card in cards" :key="card.id">
         <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
