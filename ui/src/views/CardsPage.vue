@@ -4,7 +4,6 @@ import { useRouter, useRoute } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
-import Calendar from "@/components/Calendar.vue"
 import CalHeatmap from '@/components/CalHeatmap.vue';
 
 const router = useRouter();

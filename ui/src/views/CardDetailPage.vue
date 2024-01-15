@@ -2,7 +2,6 @@
 import { ref } from "vue"
 import Card from '../components/Card.vue';
 import { useRoute } from 'vue-router'
-import getBackgroundColor from '@/utils/bg-color.ts'
 
 const route = useRoute()
 const cardID = ref(+route.params.id)

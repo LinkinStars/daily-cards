@@ -130,16 +130,9 @@ setCardsStat();
 .heatmap-bg {
   display: flex;
   justify-content: center;
-  /* background: #eceef0; */
   background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
-}
-
-@media (max-width: 1100px) {
-  #heatmap {
-    /*display: none;*/
-  }
 }
 </style>
