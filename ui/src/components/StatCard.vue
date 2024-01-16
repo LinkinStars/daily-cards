@@ -1,25 +1,31 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { getCard } from "../api/card";
+import { ref, reactive, onMounted } from "vue";
+import { getCardsStat } from "@/api/card";
+import { getSiteInfo } from "../api/site";
 import getBackgroundColor from "@/utils/bg-color.ts";
 import useClipboard from "vue-clipboard3";
 import html2canvas from "html2canvas";
 import QrcodeVue from 'qrcode.vue'
 import VueEasyLightbox from 'vue-easy-lightbox';
 import { useRouter } from "vue-router";
+import CalHeatmap from '@/components/CalHeatmap.vue';
+import dayjs from "dayjs";
 
 const router = useRouter();
 
 const { toClipboard } = useClipboard();
-const props = defineProps<{ id: number }>();
 const cardInfo = reactive({
-  id: 0,
   created_at: "",
-  content: "",
   nickname: "",
   avatar: "",
+  checked_yearly: 0,
+  checked_total: 0,
 });
-const showShareTip = ref(false);
+// 获取今天的时间格式为 2021-01-01
+const today = dayjs();
+const todayStr = today.format("YYYY-MM-DD");
+cardInfo.created_at = todayStr;
+
 const showTip = ref(false);
 const showCapture = ref(false);
 const imgsRef = ref([])
@@ -38,22 +44,14 @@ const copyURL = async () => {
 };
 
 const shareURL = () => {
-   return window.location.protocol + "//" + window.location.host + "/card/" + props.id;
+   return window.location.protocol + "//" + window.location.host + "/card/stat";
 }
 
 const getCardByID = async () => {
-  const res = await getCard(props.id);
-  if (res.code != 200) {
-    router.push({ name: "not-found" });
-  } else {
-    cardInfo.id = res.data.id;
-    cardInfo.created_at = res.data.created_at;
-    cardInfo.content = res.data.content;
+  const res = await getSiteInfo();
+  if (res.code == 200) {
     cardInfo.nickname = res.data.nickname;
     cardInfo.avatar = res.data.avatar;
-  }
-  if (cardInfo.id === 0) {
-    router.push({ name: "not-found" });
   }
 };
 getCardByID();
@@ -77,7 +75,7 @@ const capture = async (showPop : boolean) => {
       canvas.toBlob(function(blob){
           var a = document.createElement('a')
           var url = window.URL.createObjectURL(blob)
-          var filename = 'card_' + cardInfo.created_at + '_' + cardInfo.id + '.png'
+          var filename = 'card_' + cardInfo.created_at + '_stat' + '.png'
           a.href = url
           a.download = filename
           a.click()
@@ -98,21 +96,43 @@ const capture = async (showPop : boolean) => {
 
 let siteInfo = JSON.parse(localStorage.getItem('siteInfo') || '{}');
 const showQrcode = siteInfo.show_qrcode;
+
+const setCardsStat = async () => {
+  const resp = await getCardsStat();
+  if (resp.code != 200) {
+    return;
+  }
+  cardInfo.checked_yearly = resp.data.checked_days.length;
+  cardInfo.checked_total = resp.data.checked_total;
+}
+setCardsStat();
 </script>
 
 <template>
   <div class="card-border">
-    <div id="card-bg" :style="getBackgroundColor(props.id)">
+    <div id="card-bg" :style="getBackgroundColor(dayjs().day())">
     <div class="card">
       <div class="user-info">
         <img :src="cardInfo.avatar" @click="capture(true)" />
         <div class="user-nickname">
-          <p>{{ cardInfo.nickname }}</p>
+          <p>{{ cardInfo.nickname }} 近一年打卡记录</p>
         </div>
       </div>
-      <div class="card-content" v-html="cardInfo.content" v-highlight></div>
-      <div v-if="showQrcode" class="share-qrcode">
-        <qrcode-vue :value="shareURL()" :size="50"></qrcode-vue>
+      <CalHeatmap />
+      <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 25px;">
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#icon-4bd80d63353e4f38)"><path d="M42 20V39C42 40.6569 40.6569 42 39 42H9C7.34315 42 6 40.6569 6 39V9C6 7.34315 7.34315 6 9 6H30" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 20L26 28L41 7" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="icon-4bd80d63353e4f38"><rect width="48" height="48" fill="#FFF"/></clipPath></defs></svg>
+            <p style="margin-left: 5px;">近一年打卡次数：{{ cardInfo.checked_yearly }}</p>
+          </div>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 24L15.25 25.25M44 14L24 34L22.75 32.75" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 24L14 34L34 14" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p style="margin-left: 5px;">打卡总次数：{{ cardInfo.checked_total }}</p>
+          </div>
+        </div>
+        <div v-if="showQrcode" class="share-qrcode">
+          <qrcode-vue :value="shareURL()" :size="50"></qrcode-vue>
+        </div>
       </div>
       <hr />
       <div class="card-footer">

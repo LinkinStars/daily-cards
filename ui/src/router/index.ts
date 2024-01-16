@@ -8,6 +8,7 @@ import UserCardsPage from '../views/UserCardsPage.vue'
 import UserLoginPage from '../views/UserLoginPage.vue'
 import UserPostCardPage from '../views/UserPostCardPage.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
+import CardStatPage from '../views/CardStatPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,6 +25,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/card/page',
         name: 'card-page',
         component: CardsPage
+      },
+      {
+        path: '/card/stat',
+        name: 'card-stat',
+        component: CardStatPage
       },
       {
         path: '/card/uc/:id',

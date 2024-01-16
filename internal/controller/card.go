@@ -172,5 +172,6 @@ func GetCardsStat(ctx *gin.Context) {
 		parsed, _ := time.Parse(time.RFC3339, r)
 		resp.CheckedDays = append(resp.CheckedDays, parsed.Format("2006-01-02"))
 	}
+	resp.CheckedTotal, err = dao.CountCards()
 	handler.HandleResponse(ctx, err, resp)
 }

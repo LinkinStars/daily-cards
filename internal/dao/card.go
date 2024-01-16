@@ -145,6 +145,14 @@ func GetCardsRecord(startTime, endTime time.Time) (recordTime []string, err erro
 	return recordTime, nil
 }
 
+func CountCards() (count int64, err error) {
+	count, err = db.Engine.Count(&model.Card{})
+	if err != nil {
+		return 0, mistake.InternalServer("500", err.Error())
+	}
+	return count, nil
+}
+
 func Markdown2HTML(source string) string {
 	mdConverter := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),

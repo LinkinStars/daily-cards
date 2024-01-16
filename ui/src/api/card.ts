@@ -98,6 +98,7 @@ export type GetCardsStatReq = {
 
 export type CardStat = {
   checked_days: string[];
+  checked_total: number;
 }
 
 export function getCardsStat(startTime : string) {
