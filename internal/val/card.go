@@ -62,4 +62,5 @@ type GetCardsStatReq struct {
 type GetCardsStatResp struct {
 	CheckedDays  []string `json:"checked_days"`
 	CheckedTotal int64    `json:"checked_total"`
+	DayTotal     int64    `json:"day_total"`
 }

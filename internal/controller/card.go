@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/LinkinStars/dc/internal/model"
 	"net/http"
 	"time"
+
+	"github.com/LinkinStars/dc/internal/model"
 
 	"github.com/LinkinStars/dc/internal/base/config"
 	"github.com/LinkinStars/dc/internal/base/handler"
@@ -173,5 +174,15 @@ func GetCardsStat(ctx *gin.Context) {
 		resp.CheckedDays = append(resp.CheckedDays, parsed.Format("2006-01-02"))
 	}
 	resp.CheckedTotal, err = dao.CountCards()
+
+	firstCard, exist, err := dao.GetFirstCard()
+	if err != nil {
+		handler.HandleResponse(ctx, err, nil)
+		return
+	}
+	if exist {
+		// 从第一次打卡到今天共计多少天
+		resp.DayTotal = int64(now.EndOfDay().Sub(firstCard.CreatedAt).Hours()/24) + 1
+	}
 	handler.HandleResponse(ctx, err, resp)
 }

@@ -20,6 +20,7 @@ const cardInfo = reactive({
   avatar: "",
   checked_yearly: 0,
   checked_total: 0,
+  day_total: 0,
 });
 // 获取今天的时间格式为 2021-01-01
 const today = dayjs();
@@ -104,6 +105,10 @@ const setCardsStat = async () => {
   }
   cardInfo.checked_yearly = resp.data.checked_days.length;
   cardInfo.checked_total = resp.data.checked_total;
+  cardInfo.day_total = resp.data.day_total;
+  if (cardInfo.day_total == 0) {
+    cardInfo.day_total = 1;
+  }
 }
 setCardsStat();
 </script>
@@ -119,15 +124,23 @@ setCardsStat();
         </div>
       </div>
       <CalHeatmap />
-      <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 25px;">
-          <div style="display: flex; flex-direction: row; align-items: center;">
+      <div class="card-stat-grand">
+        <div class="card-stat-col">
+          <div class="card-stat-desc">
             <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#icon-4bd80d63353e4f38)"><path d="M42 20V39C42 40.6569 40.6569 42 39 42H9C7.34315 42 6 40.6569 6 39V9C6 7.34315 7.34315 6 9 6H30" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 20L26 28L41 7" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="icon-4bd80d63353e4f38"><rect width="48" height="48" fill="#FFF"/></clipPath></defs></svg>
-            <p style="margin-left: 5px;">近一年打卡次数：{{ cardInfo.checked_yearly }}</p>
+            <p style="margin-left: 5px;">近一年：<em>{{ cardInfo.checked_yearly }}</em>次</p>
           </div>
-          <div style="display: flex; flex-direction: row; align-items: center;">
+          <div class="card-stat-desc">
             <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 24L15.25 25.25M44 14L24 34L22.75 32.75" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 24L14 34L34 14" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <p style="margin-left: 5px;">打卡总次数：{{ cardInfo.checked_total }}</p>
+            <p style="margin-left: 5px;">总打卡：<em>{{ cardInfo.checked_total }}</em>次</p>
+          </div>
+          <div class="card-stat-desc">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.81836 6.72729V14H13.0911" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 24C4 35.0457 12.9543 44 24 44V44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C16.598 4 10.1351 8.02111 6.67677 13.9981" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.005 12L24.0038 24.0088L32.4832 32.4882" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p style="margin-left: 5px;">已坚持：<em>{{ cardInfo.day_total }}</em>天</p>
+          </div>
+          <div class="card-stat-desc">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30.2972 18.7786C30.2972 18.7786 27.0679 27.8809 25.5334 29.47C23.9988 31.0591 21.4665 31.1033 19.8774 29.5687C18.2882 28.0341 18.244 25.5019 19.7786 23.9127C21.3132 22.3236 30.2972 18.7786 30.2972 18.7786Z" fill="#333" stroke="#333" stroke-width="4" stroke-linejoin="round"/><path d="M38.8492 38.8492C42.6495 35.049 45 29.799 45 24C45 12.402 35.598 3 24 3C12.402 3 3 12.402 3 24C3 29.799 5.35051 35.049 9.15076 38.8492" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 4V8" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M38.8454 11.1421L35.7368 13.6593" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M42.5223 27.2328L38.6248 26.333" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.47737 27.2328L9.37485 26.333" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.15463 11.142L12.2632 13.6593" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p style="margin-left: 5px;">百分比：<em>{{ (cardInfo.checked_total/cardInfo.day_total*100).toFixed(2) }}%</em></p>
           </div>
         </div>
         <div v-if="showQrcode" class="share-qrcode">
@@ -243,6 +256,26 @@ hr {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+}
+.card-stat-grand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.card-stat-col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 25px;
+}
+.card-stat-desc {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.card-stat-desc > p > em {
+  font-size: 1.5rem;
 }
 </style>
 

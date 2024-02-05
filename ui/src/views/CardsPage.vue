@@ -38,12 +38,23 @@ const jumpCardDetailPage = (id: number) => {
 const jumpDayCardPage = async (date : string) => {
   router.push({ name: "card-page", query: { d: date }});
 };
+
+const jumpCardStatPage = async (date : string) => {
+  router.push({ name: "card-stat" });
+};
 </script>
 
 <template>
   <div class="card-list-bg">
     <div class="card-list">
-      <CalHeatmap @clickBox="jumpDayCardPage" />
+      <div class="card-list-item" >
+        <div class="ribbon-header" @click="jumpCardStatPage">
+          <div class="ribbon">
+            <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.81836 6.72729V14H13.0911" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 24C4 35.0457 12.9543 44 24 44V44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C16.598 4 10.1351 8.02111 6.67677 13.9981" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.005 12L24.0038 24.0088L32.4832 32.4882" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <CalHeatmap @clickBox="jumpDayCardPage" />
+      </div>
       <div class="card-list-item" v-for="card in cards" :key="card.id">
         <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
@@ -109,6 +120,36 @@ const jumpDayCardPage = async (date : string) => {
   width: 100%;
   word-wrap: break-word;
   text-align: left;
+}
+.ribbon-header {
+    cursor: pointer;
+    float: right;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    height: 0;
+    margin-top: 10px;
+    margin-right: -10px;
+}
+/* HTML: <div class="ribbon">Your text content</div> */
+.ribbon {
+  font-size: 14px;
+  color: #fff;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 5px 0 5px 0;
+}
+.ribbon {
+  --r: .8em; /* control the cutout */
+
+  border-block: .5em solid #0000;
+  padding-inline: calc(var(--r) + .25em) .5em;
+  line-height: 1.8;
+  clip-path: polygon(0 0,100% 0,100% 100%,0 100%,0 calc(100% - .25em),var(--r) 50%,0 .25em);
+  background:
+   rgb(100, 206, 170) padding-box; /* the color  */
+  width: fit-content;
 }
 </style>
 

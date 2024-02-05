@@ -3,8 +3,9 @@ package dao
 import (
 	"bytes"
 	"fmt"
-	"github.com/jinzhu/now"
 	"time"
+
+	"github.com/jinzhu/now"
 
 	"github.com/LinkinStars/dc/internal/base/db"
 	"github.com/LinkinStars/dc/internal/model"
@@ -76,6 +77,15 @@ func GetCardDetail(id int) (card *model.Card, err error) {
 		return nil, mistake.InternalServer("500", err.Error())
 	}
 	return card, nil
+}
+
+func GetFirstCard() (card *model.Card, exist bool, err error) {
+	card = &model.Card{}
+	exist, err = db.Engine.Asc("id").Get(card)
+	if err != nil {
+		return nil, false, mistake.InternalServer("500", err.Error())
+	}
+	return card, exist, nil
 }
 
 func GetCardDetailByOffset(id, offset int) (card *model.Card, err error) {
