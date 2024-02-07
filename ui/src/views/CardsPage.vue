@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
-import CalHeatmap from '@/components/CalHeatmap.vue';
+import CalHeatmap from "@/components/CalHeatmap.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -14,7 +14,11 @@ let page = 1;
 let pageSize = 20;
 const load = async ($state) => {
   try {
-    const resp = await getCardsPage(page, route.query.q as string, route.query.d as string);
+    const resp = await getCardsPage(
+      page,
+      route.query.q as string,
+      route.query.d as string
+    );
     cards.value.push(...resp.data.cards);
     if (resp.data.cards.length < pageSize) $state.complete();
     else {
@@ -26,20 +30,28 @@ const load = async ($state) => {
   }
 };
 
+const isLogin = ref(false);
+if (localStorage.getItem("accessToken")) {
+  isLogin.value = true;
+}
+
 const jumpCardDetailPage = (id: number) => {
-  router.push({
-    name: "card-detail",
-    params: {
-      id: id,
-    },
-  });
+  let routerName = "card-detail";
+  if (isLogin.value) {
+    routerName = "user-card-detail";
+  }
+  router.push({ name: routerName, params: { id: id } });
 };
 
-const jumpDayCardPage = async (date : string) => {
-  router.push({ name: "card-page", query: { d: date }});
+const jumpPostPage = () => {
+  router.push({ name: "user-card-post", params: { id: 0 } });
 };
 
-const jumpCardStatPage = async (date : string) => {
+const jumpDayCardPage = async (date: string) => {
+  router.push({ name: "card-page", query: { d: date } });
+};
+
+const jumpCardStatPage = async (date: string) => {
   router.push({ name: "card-stat" });
 };
 </script>
@@ -47,7 +59,7 @@ const jumpCardStatPage = async (date : string) => {
 <template>
   <div class="card-list-bg">
     <div class="card-list">
-      <div class="card-list-item" >
+      <div class="card-list-item">
         <div class="ribbon-header" @click="jumpCardStatPage">
           <div class="ribbon">
             <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.81836 6.72729V14H13.0911" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 24C4 35.0457 12.9543 44 24 44V44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C16.598 4 10.1351 8.02111 6.67677 13.9981" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.005 12L24.0038 24.0088L32.4832 32.4882" stroke="#fffefe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -59,7 +71,7 @@ const jumpCardStatPage = async (date : string) => {
         <div class="card-content" v-html="card.content" v-highlight></div>
         <hr />
         <div class="card-footer">
-          <span>📅 {{ card.created_at }}</span>
+          <span>📅 {{ card.created_at }} <span v-if="isLogin">👀 {{ card.pv }}</span></span>
           <span @click="jumpCardDetailPage(card.id)">详情</span>
         </div>
       </div>
@@ -68,6 +80,7 @@ const jumpCardStatPage = async (date : string) => {
         :slots="{ complete: '没有更多卡片了', error: '加载失败' }"
       />
     </div>
+    <button v-if="isLogin" class="post-card-btn" @click="jumpPostPage()">+</button>
   </div>
 </template>
 
@@ -121,17 +134,33 @@ const jumpCardStatPage = async (date : string) => {
   word-wrap: break-word;
   text-align: left;
 }
-.ribbon-header {
-    cursor: pointer;
-    float: right;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    height: 0;
-    margin-top: 10px;
-    margin-right: -10px;
+
+.post-card-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 30px;
+  border-radius: 50%;
+  border: none;
+  width: 60px;
+  height: 60px;
+  font-size: 40px;
+  background-color: #1fc6e6;
+  color: #f7f9fe;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3),
+    -10px -10px 20px rgba(255, 255, 255, 0.3);
 }
-/* HTML: <div class="ribbon">Your text content</div> */
+
+.ribbon-header {
+  cursor: pointer;
+  float: right;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  height: 0;
+  margin-top: 10px;
+  margin-right: -10px;
+}
+
 .ribbon {
   font-size: 14px;
   color: #fff;
@@ -141,14 +170,21 @@ const jumpCardStatPage = async (date : string) => {
   padding: 5px 0 5px 0;
 }
 .ribbon {
-  --r: .8em; /* control the cutout */
+  --r: 0.8em; /* control the cutout */
 
-  border-block: .5em solid #0000;
-  padding-inline: calc(var(--r) + .25em) .5em;
+  border-block: 0.5em solid #0000;
+  padding-inline: calc(var(--r) + 0.25em) 0.5em;
   line-height: 1.8;
-  clip-path: polygon(0 0,100% 0,100% 100%,0 100%,0 calc(100% - .25em),var(--r) 50%,0 .25em);
-  background:
-   rgb(100, 206, 170) padding-box; /* the color  */
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 calc(100% - 0.25em),
+    var(--r) 50%,
+    0 0.25em
+  );
+  background: rgb(100, 206, 170) padding-box; /* the color  */
   width: fit-content;
 }
 </style>

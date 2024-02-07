@@ -44,13 +44,7 @@ const clearQueryAndJumpCardPage = () => {
 };
 
 const jumpCardPage = async () => {
-  const resp = await getSiteInfo();
-  let token = localStorage.getItem("accessToken");
-  if (token && resp.code === 200 && resp.data.is_login) {
-    router.push({ name: "user-card-page", query: { q: searchText.value } });
-  } else {
-    router.push({ name: "card-page", query: { q: searchText.value }});
-  }
+  router.push({ name: "card-page", query: { q: searchText.value }});
 };
 
 const jumpToLoginPage = async () => {

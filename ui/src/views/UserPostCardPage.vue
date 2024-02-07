@@ -81,7 +81,7 @@ const postCard = async () => {
     const res = await addCard(content.value);
     if (res.code === 200) {
       removeDraft()
-      router.push({ name: "user-card-page" });
+      router.push({ name: "card-page" });
     }
   }
   postButtonFlag.value = false;
@@ -96,7 +96,7 @@ const addContent = (c: string) => {
 };
 
 const jumpCardPage = async () => {
-  router.push({ name: "user-card-page" });
+  router.push({ name: "card-page" });
 };
 
 getCardInfo();

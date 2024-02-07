@@ -269,6 +269,13 @@ hr {
     align-items: center;
     gap: 25px;
 }
+@media screen and (max-width: 768px) {
+  .card-stat-col {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0px;
+  }
+}
 .card-stat-desc {
   display: flex;
   flex-direction: row;

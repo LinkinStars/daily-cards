@@ -18,7 +18,7 @@ const deleteCardByID = async () => {
   const res = await deleteCard(cardID.value);
   if (res.code === 200) {
     alert("删除成功");
-    router.push({ name: "user-card-page" });
+    router.push({ name: "card-page" });
   }
   return;
 };
@@ -47,7 +47,7 @@ const otherCardDetailPage = async (offset: number) => {
 };
 
 const jumpCardPage = async () => {
-  router.push({ name: "user-card-page" });
+  router.push({ name: "card-page" });
 };
 
 const getCardByID = async () => {

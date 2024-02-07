@@ -12,7 +12,7 @@ const login = async () => {
   const resp = await userLogin(username.value, password.value);
   if (resp.code === 200) {
     localStorage.setItem("accessToken", resp.data.token);
-    router.push({ name: "user-card-page" });
+    router.push({ name: "card-page" });
     return;
   }
 };
