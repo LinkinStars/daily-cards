@@ -2,6 +2,9 @@ package router
 
 import (
 	"net/http"
+	"strings"
+
+	brotli "github.com/anargu/gin-brotli"
 
 	"github.com/LinkinStars/dc/internal/base/config"
 	"github.com/LinkinStars/dc/internal/base/middleware"
@@ -16,6 +19,7 @@ func Run() {
 	r := gin.New()
 
 	r.Use(middleware.CORS())
+	r.Use(brotli.Brotli(brotli.DefaultCompression))
 	r.StaticFS("/card", http.FS(static.Build))
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/card/page")
@@ -32,6 +36,11 @@ func Run() {
 	})
 
 	r.NoRoute(func(ctx *gin.Context) {
+		// If the request path is /dist, redirect to /card/dist
+		if strings.HasPrefix(ctx.Request.URL.Path, "/dist") {
+			ctx.Redirect(http.StatusFound, "/card"+ctx.Request.URL.Path)
+			return
+		}
 		ctx.Header("content-type", "text/html;charset=utf-8")
 		file, err := static.Build.ReadFile("index.html")
 		if err != nil {

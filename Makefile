@@ -8,6 +8,10 @@ ui:
 	@cd ui && yarn && yarn build --emptyOutDir && cd ..
 	@mv ./ui.go static/ui.go
 
+move-dist:
+	@rm -rf ./ui/public/dist
+	@cp -r ./ui/node_modules/vditor/dist ./ui/public
+
 go:
 	@go build -o dc cmd/dc/main.go
 

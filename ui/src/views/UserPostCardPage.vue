@@ -111,7 +111,7 @@ const inputPost = () => {
 
 onMounted(() => {
   vditor.value = new Vditor('vditor', {
-    height: 400,
+    height: 500,
     toolbar: ['headings', 'bold', 'italic', 'strike', '|', 'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', 'code', 'inline-code', '|', 'insert-after', 'insert-before', 'undo', 'redo', 'link'],
     toolbarConfig: {
       pin: true,
@@ -126,6 +126,8 @@ onMounted(() => {
       id: 'post-draft',
       enable: true,
     },
+    tab: '  ',
+    cdn: '',
     after: () => {
       getCardInfo();
     },
@@ -136,12 +138,10 @@ onMounted(() => {
 <template>
   <div class="card-edit-container-bg">
     <div class="card-edit-container">
-      <div style="height: 20px"></div>
       <div><input class="card-edit-date-input" v-model="currentDate"/> {{ "PV:" + pv }}</div>
-      <div style="height: 20px"></div>
       <div class="card-editor">
         <!-- <textarea autofocus v-model="content" rows="20" @input="inputPost"></textarea> -->
-        <div id="vditor" style="height: 200px;" />
+        <div id="vditor" />
       </div>
       <div style="height: 20px"></div>
       <div class="card-edit-btn">
@@ -182,6 +182,8 @@ onMounted(() => {
   background-color: transparent;
   border: none;
   width: 90px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 @media screen and (max-width: 768px) {
