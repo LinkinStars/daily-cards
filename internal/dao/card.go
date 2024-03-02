@@ -1,21 +1,17 @@
 package dao
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 
 	"github.com/jinzhu/now"
 
+	"github.com/88250/lute"
 	"github.com/LinkinStars/dc/internal/base/db"
 	"github.com/LinkinStars/dc/internal/model"
 	"github.com/LinkinStars/dc/internal/val"
 	"github.com/LinkinStars/go-scaffold/logger"
 	"github.com/LinkinStars/go-scaffold/mistake"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer/html"
 )
 
 func AddCard(content string) error {
@@ -164,20 +160,22 @@ func CountCards() (count int64, err error) {
 }
 
 func Markdown2HTML(source string) string {
-	mdConverter := goldmark.New(
-		goldmark.WithExtensions(extension.GFM),
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(),
-		),
-		goldmark.WithRendererOptions(
-			html.WithHardWraps(),
-			html.WithUnsafe(),
-		),
-	)
-	var buf bytes.Buffer
-	if err := mdConverter.Convert([]byte(source), &buf); err != nil {
-		logger.Error(err)
-		return source
-	}
-	return buf.String()
+	luteEngine := lute.New() // 默认已经启用 GFM 支持以及中文语境优化
+	return luteEngine.MarkdownStr("demo", source)
+	//mdConverter := goldmark.New(
+	//	goldmark.WithExtensions(extension.GFM),
+	//	goldmark.WithParserOptions(
+	//		parser.WithAutoHeadingID(),
+	//	),
+	//	goldmark.WithRendererOptions(
+	//		html.WithHardWraps(),
+	//		html.WithUnsafe(),
+	//	),
+	//)
+	//var buf bytes.Buffer
+	//if err := mdConverter.Convert([]byte(source), &buf); err != nil {
+	//	logger.Error(err)
+	//	return source
+	//}
+	//return buf.String()
 }

@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { addCard, updateCard, getCard } from "@/api/card.ts";
 import { saveDraft, readDraft, removeDraft } from "@/utils/post-draft.ts";
+import Vditor from 'vditor';
+import 'vditor/dist/index.css';
+
+const vditor = ref<Vditor | null>(null);
 
 const route = useRoute();
 const router = useRouter();
@@ -43,7 +47,7 @@ const getCardInfo = async () => {
 };
 
 const loadPreCard = async () => {
-  if (content.value.length > 0) {
+  if (vditor.value!.getValue().length > 0) {
     if (!window.confirm("当前已经有内容，确定要重新加载吗？")) {
       return;
     }
@@ -63,10 +67,12 @@ const loadCardInfo = async (id : number) => {
     content.value = res.data.original_text;
     pv.value = res.data.pv;
     currentDate.value = res.data.created_at;
+    vditor.value!.setValue(content.value);
 }
 
 const postButtonFlag = ref(false);
 const postCard = async () => {
+  content.value = vditor.value!.getValue();
   postButtonFlag.value = true;
   if (cardID.value > 0) {
     const res = await updateCard(cardID.value, content.value, currentDate.value);
@@ -99,11 +105,32 @@ const jumpCardPage = async () => {
   router.push({ name: "card-page" });
 };
 
-getCardInfo();
-
 const inputPost = () => {
   saveDraft(content.value)
 };
+
+onMounted(() => {
+  vditor.value = new Vditor('vditor', {
+    height: 400,
+    toolbar: ['headings', 'bold', 'italic', 'strike', '|', 'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', 'code', 'inline-code', '|', 'insert-after', 'insert-before', 'undo', 'redo', 'link'],
+    toolbarConfig: {
+      pin: true,
+    },
+    preview: {
+      hljs: {
+        style: 'dracula'
+      },
+      actions: []
+    },
+    cache: {
+      id: 'post-draft',
+      enable: true,
+    },
+    after: () => {
+      getCardInfo();
+    },
+  });
+});
 </script>
 
 <template>
@@ -113,14 +140,13 @@ const inputPost = () => {
       <div><input class="card-edit-date-input" v-model="currentDate"/> {{ "PV:" + pv }}</div>
       <div style="height: 20px"></div>
       <div class="card-editor">
-        <textarea autofocus v-model="content" rows="20" @input="inputPost"></textarea>
+        <!-- <textarea autofocus v-model="content" rows="20" @input="inputPost"></textarea> -->
+        <div id="vditor" style="height: 200px;" />
       </div>
       <div style="height: 20px"></div>
       <div class="card-edit-btn">
         
         <button @click="jumpCardPage()">返回</button>
-        <button @click="addContent('- [ ] ')">TODO</button>
-        <button @click="addContent('- ')">ITEM</button>
         <button @click="loadPreCard()">加载最新</button>
         <button :disabled="postButtonFlag" @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
       </div>
@@ -166,6 +192,7 @@ const inputPost = () => {
 
 .card-editor {
   width: 100%;
+  text-align: left;
 }
 
 .card-editor textarea {
