@@ -285,27 +285,3 @@ hr {
   font-size: 1.5rem;
 }
 </style>
-
-<style>
-.card-content>ul {
-  margin-block-start: 0em;
-  margin-block-end: 0em;
-  padding-inline-start: 20px;
-}
-img {
-  width: 100%;
-}
-blockquote {
-    margin: 0 0 1rem;
-    padding: 1rem;
-    border-left: 0.25rem solid #49b1f5;
-    background-color: rgba(73,177,245,0.1);
-    color: #6a737d;
-}
-blockquote > :last-child {
-    margin-bottom: 0 !important;
-}
-blockquote > p {
-    margin: 0 0 16px;
-}
-</style>

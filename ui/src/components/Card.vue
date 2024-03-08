@@ -232,20 +232,23 @@ hr {
   margin-block-end: 0em;
   padding-inline-start: 20px;
 }
-img {
+.card-content>ul:not(:last-child) {
+    margin-bottom: 16px;
+}
+.card-content>img {
   width: 100%;
 }
-blockquote {
+.card-content>blockquote {
     margin: 0 0 1rem;
-    padding: 1rem;
-    border-left: 0.25rem solid #49b1f5;
+    padding: 6px 14px 6px 20px;
+    border-left: 0.25rem solid #3b82f6;
     background-color: rgba(73,177,245,0.1);
     color: #6a737d;
 }
-blockquote > :last-child {
+.card-content>blockquote > :last-child {
     margin-bottom: 0 !important;
 }
-blockquote > p {
+.card-content>blockquote > p {
     margin: 0 0 16px;
 }
 </style>
