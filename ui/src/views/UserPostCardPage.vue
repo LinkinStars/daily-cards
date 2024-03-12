@@ -47,7 +47,7 @@ const getCardInfo = async () => {
 };
 
 const loadPreCard = async () => {
-  if (vditor.value!.getValue().length > 0) {
+  if (vditor.value!.getValue().trim().length > 0) {
     if (!window.confirm("当前已经有内容，确定要重新加载吗？")) {
       return;
     }
