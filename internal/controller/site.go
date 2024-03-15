@@ -19,3 +19,17 @@ func GetSiteInfo(ctx *gin.Context) {
 	}
 	handler.HandleResponse(ctx, nil, resp)
 }
+
+func GetAvatar(ctx *gin.Context) {
+	ctx.File(config.GetAvatarFilePath())
+}
+
+func UploadAvatar(ctx *gin.Context) {
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		handler.HandleResponse(ctx, err, nil)
+		return
+	}
+	err = ctx.SaveUploadedFile(file, config.GetAvatarFilePath())
+	handler.HandleResponse(ctx, err, nil)
+}

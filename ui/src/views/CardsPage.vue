@@ -4,6 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
+import { uploadAvatar } from "@/api/site";
 import CalHeatmap from "@/components/CalHeatmap.vue";
 
 const router = useRouter();
@@ -54,6 +55,29 @@ const jumpDayCardPage = async (date: string) => {
 const jumpCardStatPage = async (date: string) => {
   router.push({ name: "card-stat" });
 };
+
+let siteInfo = JSON.parse(localStorage.getItem('siteInfo') || '{}');
+const nickname = siteInfo.nickname;
+const avatar = siteInfo.avatar;
+
+const tryToUploadAvatar = async (e: any) => {
+  const file = e.target.files[0];
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await uploadAvatar(formData);
+  if (res.code === 200) {
+    // 上传成功刷新页面
+    location.reload();
+  }
+};
+
+const handleAvatarClick = () => {
+  if (!isLogin.value) {
+    return;
+  }
+  const input = document.getElementById("upload") as HTMLInputElement;
+  input.click();
+};
 </script>
 
 <template>
@@ -66,6 +90,14 @@ const jumpCardStatPage = async (date: string) => {
           </div>
         </div>
         <CalHeatmap @clickBox="jumpDayCardPage" />
+        <hr />
+        <div class="card-list-item-user-info">
+          <img :src="avatar" @click="handleAvatarClick"/>
+          <input id="upload" type="file" accept="image/png, image/jpeg" @change="tryToUploadAvatar" style="display: none" />
+          <div class="card-list-item-user-nickname">
+            <p>{{ nickname }}</p>
+          </div>
+        </div>
       </div>
       <div class="card-list-item" v-for="card in cards" :key="card.id">
         <div class="card-content" v-html="card.content" v-highlight></div>
@@ -186,6 +218,28 @@ const jumpCardStatPage = async (date: string) => {
   );
   background: rgb(100, 206, 170) padding-box; /* the color  */
   width: fit-content;
+}
+
+.card-list-item-user-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.card-list-item-user-info>img {
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  margin-right: 0.75em;
+}
+
+.card-list-item-user-nickname {
+  font-size: 1em;
+  
+}
+.card-list-item-user-nickname > p {
+  margin: 0;
 }
 </style>
 

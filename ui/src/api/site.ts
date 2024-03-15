@@ -14,3 +14,14 @@ export function getSiteInfo() {
     method: 'get',
   })
 }
+
+export function uploadAvatar(data : any) {
+  return request({
+    url: '/api/v1/card/avatar',
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data
+  })
+}

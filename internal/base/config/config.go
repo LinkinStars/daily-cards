@@ -17,6 +17,7 @@ var (
 
 const (
 	configFilename = "config.yaml"
+	avatarFilename = "avatar.png"
 	defaultConfig  = `WebPort: ":8080"
 Username: "admin"
 Password: "admin"
@@ -82,4 +83,8 @@ func WriteConfigFile() (err error) {
 		return err
 	}
 	return nil
+}
+
+func GetAvatarFilePath() string {
+	return filepath.Join(DataPath, avatarFilename)
 }

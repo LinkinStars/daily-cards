@@ -53,6 +53,7 @@ func Run() {
 
 	v1 := r.Group("/api/v1")
 	v1.POST("/card/login", controller.Login)
+	v1.GET("/card/avatar", controller.GetAvatar)
 
 	authV1 := r.Group("/api/v1")
 	authV1.Use(middleware.Auth(false))
@@ -64,6 +65,7 @@ func Run() {
 	mustAuthV1 := r.Group("/api/v1")
 	mustAuthV1.Use(middleware.Auth(true))
 
+	mustAuthV1.POST("/card/avatar", controller.UploadAvatar)
 	mustAuthV1.POST("/card", controller.PostCard)
 	mustAuthV1.PUT("/card", controller.UpdateCard)
 	mustAuthV1.DELETE("/card", controller.DeleteCard)
