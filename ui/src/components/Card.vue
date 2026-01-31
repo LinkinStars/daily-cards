@@ -3,10 +3,11 @@ import { ref, reactive } from "vue";
 import { getCard } from "../api/card";
 import getBackgroundColor from "@/utils/bg-color.ts";
 import useClipboard from "vue-clipboard3";
-import html2canvas from "html2canvas";
+import { toPng } from 'html-to-image';
 import QrcodeVue from 'qrcode.vue'
 import VueEasyLightbox from 'vue-easy-lightbox';
 import { useRouter } from "vue-router";
+import { showError, showSuccess } from '@/utils/toast';
 
 const router = useRouter();
 
@@ -19,19 +20,16 @@ const cardInfo = reactive({
   nickname: "",
   avatar: "",
 });
-const showShareTip = ref(false);
 const showTip = ref(false);
 const showCapture = ref(false);
+const showTooltip = ref(true);
 const imgsRef = ref([])
 
 const copyURL = async () => {
   var url = shareURL()
   try {
     await toClipboard(url);
-    showTip.value = true;
-   setTimeout(() => {
-      showTip.value = false;
-    }, 5000);
+    showSuccess("链接已复制到剪切板");
   } catch (e) {
     console.error(e);
   }
@@ -59,41 +57,50 @@ const getCardByID = async () => {
 getCardByID();
 
 const capture = async (showPop : boolean) => {
-  const element = document.querySelector("#card-bg");
-  html2canvas(element, {
-    scale: 2, // 设置截图分辨率为原来的2倍
-    useCORS: true, // 允许使用跨域图片
-    proxy: window.location.protocol + "//" + window.location.host,
-    allowTaint: true, // 允许截图跨域图片
-    backgroundColor: null,
-  }).then((canvas) => {
-    // 微信不允许下载，只能生成进行长按保存
-    if (showPop) {
-      let url = canvas.toDataURL('image/png')
-      imgsRef.value = url
-      showCapture.value = true
-    } else {
-      // 正常浏览器应该可以下载
-      canvas.toBlob(function(blob){
-          var a = document.createElement('a')
-          var url = window.URL.createObjectURL(blob)
-          var filename = 'card_' + cardInfo.created_at + '_' + cardInfo.id + '.png'
-          a.href = url
-          a.download = filename
-          a.click()
-          // 当图片文件加载完成释放这个url
-          window.URL.revokeObjectURL(url)
-      })
+  try {
+    const element = document.querySelector("#card-bg") as HTMLElement;
+    if (!element) {
+      console.error('[Card] element not found');
+      showError('未找到卡片元素');
+      return;
     }
-    //document.querySelector('#result').innerHTML = `<img src="${url}" alt="海报"  width="100%" height="100%"/>`
-    //const image = canvas
-    //  .toDataURL("image/png")
-    //  .replace("image/png", "image/octet-stream");
-    //const link = document.createElement("a");
-    //link.download = "screenshot.png";
-    //link.href = image;
-    //link.click();
-  });
+    
+    // 隐藏提示文字
+    showTooltip.value = false;
+    // 等待DOM更新
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    console.log('[Card] generating image with html-to-image');
+    const dataUrl = await toPng(element, {
+      quality: 0.95,
+      pixelRatio: 1,
+      skipFonts: true,
+      cacheBust: true,
+    });
+    
+    // 恢复提示文字
+    showTooltip.value = true;
+    
+    console.log('[Card] image generated successfully');
+    
+    if (showPop) {
+      console.log('[Card] showing popup with image');
+      imgsRef.value = dataUrl;
+      showCapture.value = true;
+    } else {
+      console.log('[Card] attempting to download image');
+      const a = document.createElement('a');
+      const filename = 'card_' + cardInfo.created_at + '_' + cardInfo.id + '.png';
+      console.log('[Card] downloading as:', filename);
+      a.href = dataUrl;
+      a.download = filename;
+      a.click();
+    }
+  } catch (err) {
+    showTooltip.value = true;
+    console.error('[Card] image generation error:', err);
+    showError('生成图片失败，请稍后重试');
+  }
 };
 
 let siteInfo = JSON.parse(localStorage.getItem('siteInfo') || '{}');
@@ -101,154 +108,114 @@ const showQrcode = siteInfo.show_qrcode;
 </script>
 
 <template>
-  <div class="card-border">
-    <div id="card-bg" :style="getBackgroundColor(props.id)">
-    <div class="card">
-      <div class="user-info">
-        <img :src="cardInfo.avatar" @click="capture(true)" />
-        <div class="user-nickname">
-          <p>{{ cardInfo.nickname }}</p>
+  <div class="w-full flex justify-center">
+    <div class="flex gap-4 items-center" style="max-width: calc(100vw - 2rem);">
+      <!-- 卡片主体 -->
+      <div id="card-bg" :style="getBackgroundColor(props.id)" class="rounded-3xl shadow-2xl p-4" style="width: 770px;">
+        <div class="card bg-base-100 bg-opacity-95 backdrop-blur-md">
+          <div class="card-body p-6">
+            <!-- 用户信息 -->
+            <div class="flex items-center gap-3">
+              <div class="avatar cursor-pointer flex-shrink-0" @click="capture(true)">
+                <div class="w-12 h-12 rounded-full">
+                  <img :src="cardInfo.avatar" alt="avatar" />
+                </div>
+              </div>
+              <div class="flex flex-col justify-center">
+                <h2 class="text-base font-bold leading-tight">{{ cardInfo.nickname }}</h2>
+                <span class="text-sm text-base-content/50">{{ cardInfo.created_at.split(' ')[0] }}</span>
+              </div>
+            </div>
+
+            <!-- 卡片内容 -->
+            <div class="markdown-content text-left" v-html="cardInfo.content" v-highlight></div>
+
+            <!-- 二维码 -->
+            <div v-if="showQrcode" class="flex justify-end">
+              <div class="p-1.5 bg-base-200/50 rounded-lg backdrop-blur-sm">
+                <qrcode-vue :value="shareURL()" :size="50"></qrcode-vue>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="card-content" v-html="cardInfo.content" v-highlight></div>
-      <div v-if="showQrcode" class="share-qrcode">
-        <qrcode-vue :value="shareURL()" :size="50"></qrcode-vue>
-      </div>
-      <hr />
-      <div class="card-footer">
-        <span>📅 {{ cardInfo.created_at }}</span>
-        <svg @click="copyURL()" v-touch:hold="(event) => { capture(false) }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-          height="1.5em" width="1.5em">
-          <path 
-            d="M404 344a75.9 75.9 0 0 0-60.208 29.7l-163.923-93.036a75.693 75.693 0 0 0 0-49.328L343.792 138.3a75.937 75.937 0 1 0-13.776-28.976L163.3 203.946a76 76 0 1 0 0 104.108l166.717 94.623A75.991 75.991 0 1 0 404 344Zm0-296a44 44 0 1 1-44 44 44.049 44.049 0 0 1 44-44ZM108 300a44 44 0 1 1 44-44 44.049 44.049 0 0 1-44 44Zm296 164a44 44 0 1 1 44-44 44.049 44.049 0 0 1-44 44Z"
-            />
-        </svg>
+
+      <!-- 右侧操作按钮 -->
+      <div class="flex flex-col gap-4">
+        <button 
+          @click="copyURL()" 
+          class="group relative btn btn-circle btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-left flex items-center justify-center"
+          data-tip="复制分享链接"
+        >
+          <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 relative z-10 text-blue-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        </button>
+        
+        <button 
+          @click="capture(false)" 
+          class="group relative btn btn-circle btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-left flex items-center justify-center"
+          data-tip="生成卡片图片"
+        >
+          <div class="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-pink-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 relative z-10 text-purple-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>
-  </div>
-  <div v-if="showTip" class="copy-tip">
-    已复制链接到剪切板<br />长按保存图片<br/>也可点击头像后长按保存
-  </div>
+
+  <!-- 图片预览 -->
   <vue-easy-lightbox
-      :visible="showCapture"
-      :moveDisabled="true"
-      :imgs="imgsRef"
-      @hide="showCapture = false"
-    ></vue-easy-lightbox>
-  <div id="result" v-show="showCapture" @click="showCapture = false">
-  </div>
+    :visible="showCapture"
+    :moveDisabled="true"
+    :imgs="imgsRef"
+    @hide="showCapture = false"
+  ></vue-easy-lightbox>
 </template>
 
 <style scoped>
-.card-border {
-  padding: 10px;
-  width: calc(100% - 40px);
-}
-#card-bg {
-  width: calc(100% - 40px);
-  padding: 20px;
-  box-shadow: -1px 15px 30px -12px black;
-  border-radius: 10px;
+:deep(.markdown-content) img {
+  @apply w-full rounded-lg my-4;
 }
 
-.card {
-  padding: 10px;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(255, 255, 255, 0.75);
-  border-radius: 12px;
-  border: 1px solid rgba(209, 213, 219, 0.3);
+:deep(.markdown-content) ul {
+  @apply list-disc ml-5 space-y-2;
 }
 
-.user-info {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+:deep(.markdown-content) ol {
+  @apply list-decimal ml-5 space-y-2;
 }
 
-.user-info>img {
-  border-radius: 50%;
-  width: 3em;
-  height: 3em;
-  margin-right: 0.75em;
+:deep(.markdown-content) blockquote {
+  @apply border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 rounded-r-lg italic;
 }
 
-.user-nickname {
-  font-size: 1.2em;
+:deep(.markdown-content) code {
+  @apply bg-base-200 px-1.5 py-0.5 rounded text-sm font-mono;
 }
 
-.card-content {
-  text-align: left;
+:deep(.markdown-content) pre {
+  @apply bg-base-300 p-4 rounded-lg overflow-x-auto my-4;
 }
 
-:deep(.card-content) {
-  height: 100%;
-  width: 100%;
-  word-wrap: break-word;
-  text-align: left;
+:deep(.markdown-content) pre code {
+  @apply bg-transparent p-0;
 }
 
-hr {
-  display: flex;
-  position: relative;
-  margin: 8px 0 8px 0;
-  border: 1px dashed #4259ef23;
-  width: 100%;
+:deep(.markdown-content) a {
+  @apply text-primary hover:underline;
 }
 
-.card-footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+:deep(.markdown-content) h1,
+:deep(.markdown-content) h2,
+:deep(.markdown-content) h3 {
+  @apply font-bold mt-6 mb-3;
 }
 
-.copy-tip {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #eee;
-}
-
-.share-qrcode {
-  margin-right: 0px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-</style>
-
-<style>
-.card-content>ul {
-  margin-block-start: 0em;
-  margin-block-end: 0em;
-  padding-inline-start: 20px;
-}
-.card-content>ul:not(:last-child) {
-    margin-bottom: 16px;
-}
-.card-content>img {
-  width: 100%;
-}
-.card-content>blockquote {
-    margin: 0 0 1rem;
-    padding: 6px 14px 6px 20px;
-    border-left: 0.25rem solid #3b82f6;
-    background-color: rgba(73,177,245,0.1);
-    color: #6a737d;
-}
-.card-content>blockquote > :last-child {
-    margin-bottom: 0 !important;
-}
-.card-content>blockquote > p {
-    margin: 0 0 16px;
+:deep(.markdown-content) p {
+  @apply mb-4 leading-relaxed;
 }
 </style>

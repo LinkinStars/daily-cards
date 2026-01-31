@@ -3,14 +3,18 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import BasicLayout from '../components/BasicLayout.vue'
 import CardDetailPage from '../views/CardDetailPage.vue'
 import CardsPage from '../views/CardsPage.vue'
-import UserCardDetail from '../views/UserCardDetailPage.vue'
-import UserCardsPage from '../views/UserCardsPage.vue'
 import UserLoginPage from '../views/UserLoginPage.vue'
 import UserPostCardPage from '../views/UserPostCardPage.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
 import CardStatPage from '../views/CardStatPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
+  // Login page - no layout wrapper for full screen
+  {
+    path: '/card/login',
+    name: 'user-login',
+    component: UserLoginPage
+  },
   {
     path: '/',
     name: '',
@@ -32,22 +36,7 @@ const routes: Array<RouteRecordRaw> = [
         component: CardStatPage
       },
       {
-        path: '/card/uc/:id',
-        name: 'user-card-detail',
-        component: UserCardDetail
-      },
-      {
-        path: '/card/uc/page',
-        name: 'user-card-page',
-        component: UserCardsPage
-      },
-      {
-        path: '/card/uc/login',
-        name: 'user-login',
-        component: UserLoginPage
-      },
-      {
-        path: '/card/uc/post/:id',
+        path: '/card/post/:id',
         name: 'user-card-post',
         component: UserPostCardPage
       },
@@ -69,13 +58,14 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from) => {
-  if (to.name === 'user-card-detail' || to.name === 'user-card-page' || to.name === 'user-card-post') {
+router.beforeEach(async (to) => {
+  // Protected routes that require login
+  if (to.name === 'user-card-post') {
     let token = localStorage.getItem('accessToken')
     if (!token) {
-     return { name: 'user-login' }
+      return { name: 'user-login' }
     }
   }
- })
+})
 
 export default router

@@ -5,31 +5,38 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build2": "vue-tsc && vite build",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.2.6",
-    "cal-heatmap": "^4.2.3",
-    "dayjs": "^1.11.8",
-    "hidpi-canvas": "^1.0.10",
-    "highlight.js": "^11.7.0",
+    "@vueuse/core": "^11.3.0",
+    "@vueuse/motion": "^2.2.5",
+    "axios": "^1.7.9",
+    "cal-heatmap": "^4.2.4",
+    "dayjs": "^1.11.13",
+    "highlight.js": "^11.11.1",
+    "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
-    "qrcode.vue": "^3.3.3",
-    "sass": "^1.58.3",
-    "v3-infinite-loading": "^1.2.2",
-    "vditor": "^3.9.9",
-    "vue": "^3.2.45",
+    "qrcode.vue": "^3.5.1",
+    "v3-infinite-loading": "^1.3.1",
+    "vditor": "^3.10.8",
+    "vue": "^3.5.13",
     "vue-clipboard3": "^2.0.0",
-    "vue-easy-lightbox": "^1.14.0",
-    "vue-router": "4",
-    "vue3-touch-events": "^4.1.0"
+    "vue-easy-lightbox": "^1.19.0",
+    "vue-router": "^4.5.0",
+    "vue3-touch-events": "^5.0.15"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.0.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.0.0",
-    "vue-tsc": "^1.0.11"
+    "@tailwindcss/typography": "^0.5.19",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.23",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vite-plugin-pwa": "^0.21.1",
+    "vue-tsc": "^2.2.0",
+    "workbox-window": "^7.3.0"
   }
 }

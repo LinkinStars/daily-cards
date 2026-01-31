@@ -7,236 +7,120 @@ const router = useRouter();
 
 const username = ref("");
 const password = ref("");
+const isLoading = ref(false);
+const errorMessage = ref("");
 
 const login = async () => {
-  const resp = await userLogin(username.value, password.value);
-  if (resp.code === 200) {
-    localStorage.setItem("accessToken", resp.data.token);
-    router.push({ name: "card-page" });
+  if (!username.value || !password.value) {
+    errorMessage.value = "请输入用户名和密码";
     return;
+  }
+  
+  isLoading.value = true;
+  errorMessage.value = "";
+  
+  try {
+    const resp = await userLogin(username.value, password.value);
+    if (resp.code === 200) {
+      localStorage.setItem("accessToken", resp.data.token);
+      router.push({ name: "card-page" });
+    } else {
+      errorMessage.value = "登录失败，请检查用户名和密码";
+    }
+  } catch (error) {
+    errorMessage.value = "登录失败，请稍后重试";
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
 
 <template>
-  <section>
-    <div class="box">
-      <div class="square wapnone" style="--i: 0"></div>
-      <div class="square wapnone" style="--i: 1"></div>
-      <div class="square wapnone" style="--i: 2"></div>
-      <div class="square wapnone" style="--i: 3"></div>
-      <div class="square wapnone" style="--i: 4"></div>
-      <div class="square wapnone" style="--i: 5"></div>
+  <div class="h-screen flex items-center justify-center bg-base-200 overflow-hidden">
+    <div class="card w-full max-w-md bg-base-100 shadow-2xl m-4">
+      <div class="card-body">
+        <!-- Logo 和标题 -->
+        <div class="text-center mb-6">
+          <div class="avatar">
+            <div class="w-20 h-20 rounded-xl ring ring-primary ring-offset-base-100 ring-offset-2">
+              <img src="/icon/favicon-60.png" alt="logo" />
+            </div>
+          </div>
+          <h1 class="text-3xl font-bold mt-4 text-primary">日拱一卒</h1>
+          <p class="text-base-content/70 mt-2">记录每一天的成长</p>
+        </div>
 
-      <div class="container">
-        <div class="login-form">
-          <h2>日拱一卒</h2>
-          <div class="inputBx">
-            <input type="text" required="required" v-model="username" />
-            <span>用户名</span>
-            <i class="fas"></i>
+        <!-- 错误提示 -->
+        <div v-if="errorMessage" class="alert alert-error shadow-lg mb-4">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ errorMessage }}</span>
           </div>
-          <div class="inputBx password">
-            <input type="password" v-model="password" required="required" @keyup.enter.native="login()" />
-            <span>密码</span>
-            <i class="fas"></i>
+        </div>
+
+        <!-- 登录表单 -->
+        <form @submit.prevent="login" class="space-y-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">用户名</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                v-model="username" 
+                placeholder="请输入用户名" 
+                class="input input-bordered w-full pl-10" 
+                required
+              />
+            </div>
           </div>
-          <div class="inputBx">
-            <input type="submit" value="登录" @click="login()" />
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">密码</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input 
+                type="password" 
+                v-model="password" 
+                placeholder="请输入密码" 
+                class="input input-bordered w-full pl-10" 
+                required
+                @keyup.enter="login()"
+              />
+            </div>
           </div>
+
+          <div class="form-control mt-6">
+            <button 
+              type="submit" 
+              class="btn btn-primary w-full"
+              :disabled="isLoading"
+            >
+              <span v-if="isLoading" class="loading loading-spinner loading-sm"></span>
+              {{ isLoading ? '登录中...' : '登录' }}
+            </button>
+          </div>
+        </form>
+
+        <!-- 底部提示 -->
+        <div class="divider mt-6">Daily Cards</div>
+        <div class="text-center text-sm text-base-content/70">
+          <p>坚持每天记录，见证成长轨迹</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </template>
-
-<style scoped lang="scss">
-.fas {
-  width: 32px;
-}
-
-@media screen and (max-width: 768px) {
-  .wapnone {
-    display: none;
-  }
-}
-
-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-}
-
-.box {
-  position: relative;
-
-  .square {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    animation: square 10s linear infinite;
-    animation-delay: calc(-1s * var(--i));
-  }
-
-  @keyframes square {
-
-    0%,
-    100% {
-      transform: translateY(-20px);
-    }
-
-    50% {
-      transform: translateY(20px);
-    }
-  }
-
-  .square:nth-child(1) {
-    width: 100px;
-    height: 100px;
-    top: -15px;
-    right: -45px;
-  }
-
-  .square:nth-child(2) {
-    width: 150px;
-    height: 150px;
-    top: 105px;
-    left: -125px;
-    z-index: 2;
-  }
-
-  .square:nth-child(3) {
-    width: 60px;
-    height: 60px;
-    bottom: 85px;
-    right: -45px;
-    z-index: 2;
-  }
-
-  .square:nth-child(4) {
-    width: 50px;
-    height: 50px;
-    bottom: 35px;
-    left: -95px;
-  }
-
-  .square:nth-child(5) {
-    width: 50px;
-    height: 50px;
-    top: -15px;
-    left: -25px;
-  }
-
-  .square:nth-child(6) {
-    width: 85px;
-    height: 85px;
-    top: 165px;
-    right: -155px;
-    z-index: 2;
-  }
-}
-
-.container {
-  position: relative;
-  padding: 50px;
-  width: 260px;
-  min-height: 380px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  border-radius: 10px;
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
-}
-
-.container::after {
-  content: "";
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
-  border-radius: 5px;
-  pointer-events: none;
-  background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.1) 2%);
-}
-
-.login-form {
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  h2 {
-    color: #fff;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-  }
-
-  .inputBx {
-    position: relative;
-    width: 100%;
-    margin-bottom: 20px;
-
-    input {
-      width: 80%;
-      outline: none;
-      border: none;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.2);
-      padding: 8px 10px;
-      padding-left: 40px;
-      border-radius: 15px;
-      color: #fff;
-      font-size: 16px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .fas {
-      position: absolute;
-      top: 13px;
-      left: 13px;
-    }
-
-    input[type="submit"] {
-      background: #fff;
-      color: #111;
-      max-width: 100px;
-      padding: 8px 10px;
-      box-shadow: none;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: 1.5s;
-    }
-
-    input::placeholder {
-      color: #fff;
-    }
-
-    span {
-      position: absolute;
-      left: 30px;
-      padding: 10px;
-      display: inline-block;
-      color: #fff;
-      transition: 0.5s;
-      pointer-events: none;
-    }
-
-    input:focus~span,
-    input:valid~span {
-      transform: translateX(-30px) translateY(-25px);
-      font-size: 12px;
-    }
-  }
-}
-</style>

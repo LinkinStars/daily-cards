@@ -1,6 +1,6 @@
 module github.com/LinkinStars/dc
 
-go 1.22
+go 1.24
 
 require (
 	github.com/88250/lute v1.7.6

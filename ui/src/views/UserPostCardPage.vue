@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { addCard, updateCard, getCard } from "@/api/card.ts";
 import { saveDraft, readDraft, removeDraft } from "@/utils/post-draft.ts";
+import { showError } from "@/utils/toast";
 import Vditor from 'vditor';
 import 'vditor/dist/index.css';
 
@@ -14,6 +15,9 @@ const router = useRouter();
 const cardID = ref(+route.params.id);
 const content = ref("");
 const pv = ref(0);
+
+// Confirm modal state
+const showLoadModal = ref(false);
 
 let nowDate = new Date();
 let date = {
@@ -46,22 +50,25 @@ const getCardInfo = async () => {
   }
 };
 
-const loadPreCard = async () => {
+const tryLoadPreCard = () => {
   if (vditor.value!.getValue().trim().length > 0) {
-    if (!window.confirm("当前已经有内容，确定要重新加载吗？")) {
-      return;
-    }
+    showLoadModal.value = true;
+    return;
   }
-  await loadCardInfo(0)
-  // 当加载上一次卡片的时候只需要加载内容，pv 的统计不需要加载
-  pv.value = 0
-  currentDate.value = today
+  doLoadPreCard();
+};
+
+const doLoadPreCard = async () => {
+  showLoadModal.value = false;
+  await loadCardInfo(0);
+  pv.value = 0;
+  currentDate.value = today;
 };
 
 const loadCardInfo = async (id : number) => {
     const res = await getCard(id);
     if (res.code != 200) {
-      alert("未查询到数据");
+      showError("未查询到数据");
       return
     }
     content.value = res.data.original_text;
@@ -79,7 +86,7 @@ const postCard = async () => {
     if (res.code === 200) {
       removeDraft()
       router.push({
-        name: "user-card-detail",
+        name: "card-detail",
         params: { id: cardID.value },
       });
     }
@@ -111,14 +118,15 @@ const inputPost = () => {
 
 onMounted(() => {
   vditor.value = new Vditor('vditor', {
-    height: 500,
-    toolbar: ['headings', 'bold', 'italic', 'strike', '|', 'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', 'code', 'inline-code', '|', 'insert-after', 'insert-before', 'undo', 'redo', 'link'],
+    height: 'calc(100vh - 340px)',
+    minHeight: 400,
+    toolbar: ['headings', 'bold', 'italic', 'strike', '|', 'line', 'quote', 'list', 'ordered-list', 'check', 'outdent', 'indent', 'code', 'inline-code', '|', 'insert-after', 'insert-before', 'undo', 'redo', 'link', 'table', 'upload'],
     toolbarConfig: {
       pin: true,
     },
     preview: {
       hljs: {
-        style: 'dracula'
+        style: 'github-dark-dimmed'
       },
       actions: []
     },
@@ -127,7 +135,7 @@ onMounted(() => {
       enable: true,
     },
     tab: '  ',
-    cdn: '',
+    cdn: 'https://unpkg.com/vditor@3.11.2',
     after: () => {
       getCardInfo();
     },
@@ -136,107 +144,115 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="card-edit-container-bg">
-    <div class="card-edit-container">
-      <div><input class="card-edit-date-input" v-model="currentDate"/> {{ "PV:" + pv }}</div>
-      <div class="card-editor">
-        <!-- <textarea autofocus v-model="content" rows="20" @input="inputPost"></textarea> -->
-        <div id="vditor" />
+  <div class="bg-base-200 pt-6 pb-6" style="min-height: calc(100vh - 64px);">
+    <div class="container mx-auto px-4 max-w-7xl">
+      <!-- 顶部工具栏 -->
+      <div class="card bg-base-100 shadow-md mb-4">
+        <div class="card-body p-4">
+          <div class="flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+              <button class="btn btn-ghost btn-sm" @click="jumpCardPage()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                返回
+              </button>
+              
+              <div class="divider divider-horizontal mx-0"></div>
+              
+              <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-content/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <input 
+                  type="date" 
+                  v-model="currentDate" 
+                  class="input input-bordered input-sm w-40"
+                />
+              </div>
+              
+              <div v-if="pv > 0" class="badge badge-ghost gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                {{ pv }} 次查看
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-outline" @click="tryLoadPreCard()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                加载最新
+              </button>
+              <button 
+                class="btn btn-sm btn-primary"
+                :class="{ 'loading': postButtonFlag }"
+                :disabled="postButtonFlag" 
+                @click="postCard()"
+              >
+                <svg v-if="!postButtonFlag" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ cardID > 0 ? '保存修改' : '发布卡片' }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="height: 20px"></div>
-      <div class="card-edit-btn">
-        
-        <button @click="jumpCardPage()">返回</button>
-        <button @click="loadPreCard()">加载最新</button>
-        <button :disabled="postButtonFlag" @click="postCard()">{{ cardID > 0 ? '修改' : '发布' }}</button>
+
+      <!-- 编辑器区域 -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body p-0">
+          <div id="vditor" class="rounded-lg overflow-hidden" />
+        </div>
+      </div>
+
+      <!-- 提示信息 -->
+      <div class="alert shadow-lg mt-4 mb-0">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>内容会自动保存为草稿，刷新页面不会丢失</span>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- 加载确认弹窗 -->
+  <dialog :class="['modal', { 'modal-open': showLoadModal }]">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">确认加载</h3>
+      <p class="py-4">当前已经有内容，确定要重新加载吗？</p>
+      <div class="modal-action">
+        <button class="btn" @click="showLoadModal = false">取消</button>
+        <button class="btn btn-primary" @click="doLoadPreCard()">确定加载</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop" @click="showLoadModal = false">
+      <button>close</button>
+    </form>
+  </dialog>
 </template>
 
-<style scoped lang="scss">
-.card-edit-container-bg {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-
-  width: 100%;
-  min-height: 100%;
+<style>
+/* Vditor 编辑器自定义样式 */
+.vditor {
+  @apply border-0;
 }
 
-.card-edit-container {
-  padding: 60px 20px 0 20px;
-  min-height: calc(100% - 60px);
-  max-width: 800px;
-  width: calc(100% - 40px);
-
-  align-items: center;
-  flex-direction: column;
-
-  min-height: calc(100% - 60px);
-}
-.card-edit-date-input {
-  background-color: transparent;
-  border: none;
-  width: 90px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+.vditor-toolbar {
+  @apply bg-base-200 border-b border-base-300;
 }
 
-@media screen and (max-width: 768px) {
-  .card-edit-container {
-    padding: 60px 20px 0 20px;
-  }
+.vditor-toolbar--pin {
+  @apply bg-base-200;
 }
 
-.card-editor {
-  width: 100%;
-  text-align: left;
-}
-
-.card-editor textarea {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-  vertical-align: top;
-  box-sizing: border-box;
-  border: none;
-  resize: none;
-  outline: none;
-  font-size: 14px;
-  padding: 20px;
-}
-
-.card-edit-btn {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between !important;
-}
-
-.card-edit-btn > button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  line-height: 1;
-  height: 32px;
-  white-space: nowrap;
-  cursor: pointer;
-  color: #409eff;
-  text-align: center;
-  box-sizing: border-box;
-  outline: none;
-  transition: 0.1s;
-  font-weight: 500;
-  user-select: none;
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: #ecf5ff;
-  border: 1px solid #dcdfe6;
-  border-color: #a0cfff;
-  padding: 8px 15px;
-  border-radius: 4px;
+.vditor-content {
+  @apply bg-base-100;
 }
 </style>

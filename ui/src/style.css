@@ -1,50 +1,76 @@
-:root {
-  font-size: 16px;
-  line-height: 24px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: #213547;
-  background-color: #ffffff;
+@layer base {
+  :root {
+    font-size: 16px;
+    line-height: 24px;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
 
-  font-synthesis: weight;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  html,
+  body {
+    @apply w-full h-full m-0 p-0;
+  }
+
+  body {
+    @apply flex min-h-screen overflow-x-hidden bg-base-100;
+  }
+
+  #app {
+    @apply w-full;
+  }
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+@layer components {
+  /* 自定义 Markdown 内容样式 */
+  .markdown-content {
+    @apply prose max-w-none;
+  }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
+  .markdown-content h1 {
+    @apply text-2xl font-bold mb-4 mt-6;
+  }
 
-body {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  min-height: 100vh;
-  overflow: hidden;
-}
+  .markdown-content h2 {
+    @apply text-xl font-bold mb-3 mt-5;
+  }
 
-#app {
-  margin: 0 auto;
-  text-align: center;
-  width: 100%;
-}
+  .markdown-content h3 {
+    @apply text-lg font-bold mb-2 mt-4;
+  }
 
-@media (prefers-color-scheme: dark) { 
-  textarea, input {
-    color: #213547 !important;
-    background-color: #ffffff;
+  .markdown-content p {
+    @apply mb-4;
+  }
+
+  .markdown-content a {
+    @apply text-primary hover:underline;
+  }
+
+  .markdown-content code {
+    @apply bg-base-200 px-1 py-0.5 rounded text-sm;
+  }
+
+  .markdown-content pre {
+    @apply bg-base-300 p-4 rounded-lg overflow-x-auto;
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply ml-6 mb-4;
+  }
+
+  .markdown-content img {
+    @apply rounded-lg max-w-full h-auto;
+  }
+
+  .markdown-content blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4;
   }
 }
 

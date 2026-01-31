@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import router from '@/router/index'
+import { showError } from './toast'
 
 interface BaseResponse<T> {
   code: number
@@ -62,10 +63,10 @@ const request = <T>(config: AxiosRequestConfig): Promise<BaseResponse<T>> => {
             localStorage.removeItem('accessToken')
             break
           case 400:
-            alert(errorInfo.data.message)
+            showError(errorInfo.data.message)
             break
           default:
-            alert(errorInfo.statusText)
+            showError(errorInfo.statusText)
             break
         }
       }
