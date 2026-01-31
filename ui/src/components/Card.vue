@@ -108,10 +108,10 @@ const showQrcode = siteInfo.show_qrcode;
 </script>
 
 <template>
-  <div class="w-full flex justify-center">
-    <div class="flex gap-4 items-center" style="max-width: calc(100vw - 2rem);">
+  <div class="w-full flex justify-center px-4">
+    <div class="flex flex-col lg:flex-row gap-4 items-center w-full" style="max-width: 850px;">
       <!-- 卡片主体 -->
-      <div id="card-bg" :style="getBackgroundColor(props.id)" class="rounded-3xl shadow-2xl p-4" style="width: 770px;">
+      <div id="card-bg" :style="getBackgroundColor(props.id)" class="rounded-3xl shadow-2xl p-4 w-full lg:w-auto" style="max-width: 770px;">
         <div class="card bg-base-100 bg-opacity-95 backdrop-blur-md">
           <div class="card-body p-6">
             <!-- 用户信息 -->
@@ -140,26 +140,26 @@ const showQrcode = siteInfo.show_qrcode;
         </div>
       </div>
 
-      <!-- 右侧操作按钮 -->
-      <div class="flex flex-col gap-4">
+      <!-- 操作按钮 - 桌面端右侧垂直排列，移动端底部水平排列 -->
+      <div class="flex lg:flex-col flex-row gap-3 lg:gap-4">
         <button 
           @click="copyURL()" 
-          class="group relative btn btn-circle btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-left flex items-center justify-center"
+          class="group relative btn btn-circle btn-md lg:btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-top lg:tooltip-left flex items-center justify-center"
           data-tip="复制分享链接"
         >
           <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 relative z-10 text-blue-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 relative z-10 text-blue-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
         </button>
         
         <button 
           @click="capture(false)" 
-          class="group relative btn btn-circle btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-left flex items-center justify-center"
+          class="group relative btn btn-circle btn-md lg:btn-lg border-0 bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 tooltip tooltip-top lg:tooltip-left flex items-center justify-center"
           data-tip="生成卡片图片"
         >
           <div class="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-pink-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 relative z-10 text-purple-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 relative z-10 text-purple-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </button>

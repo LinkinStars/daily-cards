@@ -42,10 +42,6 @@
 ./dc -c /tmp/dc/
 ```
 
-## Usage
-- 管理员访问 http://127.0.0.1:8080/card/uc/login
-- 用户访问 http://127.0.0.1:8080/card/page
-
 ## Config
 > 如果没有指定目录，默认配置文件生成在 `/root/daily-cards/config.yaml`，修改配置后重启才生效
 

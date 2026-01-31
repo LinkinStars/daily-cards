@@ -4,7 +4,6 @@ import { useRouter, useRoute } from "vue-router";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import { getCardsPage, Card } from "@/api/card";
-import { uploadAvatar } from "@/api/site";
 import CalHeatmap from "@/components/CalHeatmap.vue";
 import useClipboard from "vue-clipboard3";
 import { showSuccess } from "@/utils/toast";
@@ -68,24 +67,7 @@ const shareCard = async (id: number) => {
 let siteInfo = JSON.parse(localStorage.getItem('siteInfo') || '{}');
 const nickname = siteInfo.nickname;
 const avatar = siteInfo.avatar;
-
-const tryToUploadAvatar = async (e: any) => {
-  const file = e.target.files[0];
-  const formData = new FormData();
-  formData.append("file", file);
-  const res = await uploadAvatar(formData);
-  if (res.code === 200) {
-    location.reload();
-  }
-};
-
-const handleAvatarClick = () => {
-  if (!isLogin.value) {
-    return;
-  }
-  const input = document.getElementById("upload") as HTMLInputElement;
-  input.click();
-};
+const hideLinkCorner = siteInfo.hide_link_corner;
 </script>
 
 <template>
@@ -167,34 +149,44 @@ const handleAvatarClick = () => {
                     <path d="M24.005 12L24.0038 24.0088L32.4832 32.4882" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
+                <a 
+                  v-if="!hideLinkCorner"
+                  href="https://github.com/LinkinStars/daily-cards" 
+                  target="_blank"
+                  class="btn btn-circle btn-xs btn-ghost flex items-center justify-center tooltip tooltip-bottom" 
+                  data-tip="GitHub"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                  </svg>
+                </a>
               </div>
               <CalHeatmap @clickBox="jumpDayCardPage" />
               <div class="divider my-2"></div>
-              <div class="flex items-center justify-end gap-3">
-                <div class="avatar cursor-pointer" @click="handleAvatarClick">
+              <div class="flex items-center gap-3">
+                <div class="avatar">
                   <div class="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                     <img :src="avatar" alt="avatar" />
                   </div>
                 </div>
-                <input id="upload" type="file" accept="image/png, image/jpeg" @change="tryToUploadAvatar" style="display: none" />
-                <p class="font-medium">{{ nickname }}</p>
+                <p class="font-medium flex-1">{{ nickname }}</p>
+                <!-- 发布按钮 -->
+                <button 
+                  v-if="isLogin"
+                  class="group relative btn btn-sm gap-2 border-0 bg-gradient-to-r from-primary to-secondary text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  @click="jumpPostPage()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>打卡</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- 浮动创建按钮（仅登录用户可见） -->
-    <button 
-      v-if="isLogin" 
-      class="btn btn-circle btn-primary btn-lg fixed bottom-8 right-8 shadow-2xl z-40"
-      @click="jumpPostPage()"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-    </button>
   </div>
 </template>
 

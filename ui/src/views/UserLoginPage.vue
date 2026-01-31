@@ -15,10 +15,10 @@ const login = async () => {
     errorMessage.value = "请输入用户名和密码";
     return;
   }
-  
+
   isLoading.value = true;
   errorMessage.value = "";
-  
+
   try {
     const resp = await userLogin(username.value, password.value);
     if (resp.code === 200) {
@@ -42,7 +42,7 @@ const login = async () => {
         <!-- Logo 和标题 -->
         <div class="text-center mb-6">
           <div class="avatar">
-            <div class="w-20 h-20 rounded-xl ring ring-primary ring-offset-base-100 ring-offset-2">
+            <div class="w-20 h-20">
               <img src="/icon/favicon-60.png" alt="logo" />
             </div>
           </div>
@@ -72,11 +72,11 @@ const login = async () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <input 
-                type="text" 
-                v-model="username" 
-                placeholder="请输入用户名" 
-                class="input input-bordered w-full pl-10" 
+              <input
+                type="text"
+                v-model="username"
+                placeholder="请输入用户名"
+                class="input input-bordered w-full pl-10"
                 required
               />
             </div>
@@ -92,11 +92,11 @@ const login = async () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <input 
-                type="password" 
-                v-model="password" 
-                placeholder="请输入密码" 
-                class="input input-bordered w-full pl-10" 
+              <input
+                type="password"
+                v-model="password"
+                placeholder="请输入密码"
+                class="input input-bordered w-full pl-10"
                 required
                 @keyup.enter="login()"
               />
@@ -104,8 +104,8 @@ const login = async () => {
           </div>
 
           <div class="form-control mt-6">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               class="btn btn-primary w-full"
               :disabled="isLoading"
             >
