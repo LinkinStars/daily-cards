@@ -4,7 +4,7 @@ import { getCardsStat } from "@/api/card";
 import { getSiteInfo } from "../api/site";
 import getBackgroundColor from "@/utils/bg-color.ts";
 import useClipboard from "vue-clipboard3";
-import { toPng } from 'html-to-image';
+import html2canvas from "html2canvas-pro";
 import QrcodeVue from 'qrcode.vue'
 import VueEasyLightbox from 'vue-easy-lightbox';
 import { useRouter } from "vue-router";
@@ -31,7 +31,7 @@ cardInfo.created_at = todayStr;
 const showTip = ref(false);
 const showCapture = ref(false);
 const showTooltip = ref(true);
-const imgsRef = ref([])
+const imgsRef = ref<string | string[]>([])
 
 const copyURL = async () => {
   var url = shareURL()
@@ -68,67 +68,18 @@ const capture = async (showPop : boolean) => {
     // 隐藏提示文字
     showTooltip.value = false;
     
-    // 为日历热力图容器设置白色背景
-    const calContainer = element.querySelector('#cal-heatmap') as HTMLElement;
-    const heatmapDiv = element.querySelector('#heatmap') as HTMLElement;
-    const calSvg = element.querySelector('#cal-heatmap svg') as SVGElement;
-    
-    // 保存原始样式
-    const originalCalBg = calContainer?.style.background || '';
-    const originalHeatmapBg = heatmapDiv?.style.background || '';
-    const originalSvgBg = calSvg?.style.background || '';
-    
-    // 强制设置白色背景
-    if (calContainer) {
-      calContainer.style.background = 'white';
-    }
-    if (heatmapDiv) {
-      heatmapDiv.style.background = 'white';
-    }
-    if (calSvg) {
-      calSvg.style.background = 'white';
-    }
-    
     // 等待DOM更新
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    console.log('[StatCard] generating image with html-to-image');
+    console.log('[StatCard] generating image with html2canvas');
     
-    // 使用多次渲染策略解决Safari/iOS黑色背景问题
-    // 参考: https://github.com/bubkoo/html-to-image/issues/361
-    const generateImage = async (retryCount: number = 3): Promise<string> => {
-      const options = {
-        quality: 0.95,
-        pixelRatio: 1,
-        skipFonts: true,
-        cacheBust: true,
-        backgroundColor: '#ffffff',
-      };
-      
-      // 多次调用以确保SVG正确渲染
-      let dataUrl = '';
-      for (let i = 0; i < retryCount; i++) {
-        dataUrl = await toPng(element, options);
-        // 添加延迟让浏览器完成渲染
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
-      return dataUrl;
-    };
-    
-    const dataUrl = await generateImage(3);
-    
-    // 恢复原始样式
-    if (calContainer) {
-      calContainer.style.background = originalCalBg;
-    }
-    if (heatmapDiv) {
-      heatmapDiv.style.background = originalHeatmapBg;
-    }
-    if (calSvg) {
-      calSvg.style.background = originalSvgBg;
-    }
-    
-    console.log('[StatCard] image generated successfully');
+    // 使用 html2canvas - 对 SVG 元素（如 cal-heatmap）支持更好
+    const canvas = await html2canvas(element, {
+      scale: 1,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+    });
     
     // 恢复提示文字
     showTooltip.value = true;
@@ -136,22 +87,30 @@ const capture = async (showPop : boolean) => {
     console.log('[StatCard] image generated successfully');
     
     if (showPop) {
-      console.log('[StatCard] showing popup with image');
-      imgsRef.value = dataUrl;
+      // 微信等不允许下载，只能生成进行长按保存
+      const url = canvas.toDataURL('image/png');
+      imgsRef.value = url;
       showCapture.value = true;
     } else {
-      console.log('[StatCard] attempting to download image');
-      const a = document.createElement('a');
-      const filename = 'card_' + cardInfo.created_at + '_stat.png';
-      console.log('[StatCard] downloading as:', filename);
-      a.href = dataUrl;
-      a.download = filename;
-      a.click();
+      // 正常浏览器可以下载
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          showError('生成图片失败');
+          return;
+        }
+        const a = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        const filename = 'card_' + cardInfo.created_at + '_stat.png';
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
     }
   } catch (err) {
     showTooltip.value = true;
     console.error('[StatCard] image generation error:', err);
-    showError('生成图片失败，请稀后重试');
+    showError('生成图片失败，请稍后重试');
   }
 };
 
