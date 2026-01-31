@@ -5,7 +5,7 @@ rollback:
 
 ui:
 	@mv static/ui.go .
-	@cd ui && yarn && yarn build --emptyOutDir && cd ..
+	@cd ui && pnpm install && pnpm build --emptyOutDir && cd ..
 	@mv ./ui.go static/ui.go
 
 move-dist:
